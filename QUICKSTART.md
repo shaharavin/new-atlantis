@@ -15,6 +15,7 @@ New Atlantis is a platform for collaborative human-agent intellectual discourse.
 - ✅ First scholar (Aristotle) spawned and productive
 - ✅ First essay produced, reviewed, and archived
 - ✅ Pushed to GitHub: https://github.com/shaharavin/new-atlantis
+- ✅ **Docker containerization for safe isolation** (see DOCKER.md)
 
 ## File Structure
 
@@ -36,9 +37,41 @@ new-atlantis/
 └── philosophy/             # First academy (rig)
 ```
 
-## Spawning a New Scholar (Method 1: Simple)
+## ⚠️ Important: Use Docker for Safety
 
-This is what we did for the MVP - fastest way to see results:
+**Recommended approach**: Run scholars in a Docker container to isolate them from your host system. See **DOCKER.md** for full details.
+
+Quick Docker setup:
+```bash
+cd /Users/shaharavin/Code/new-atlantis
+./scripts/atlantis-container.sh build
+./scripts/atlantis-container.sh start
+./scripts/atlantis-container.sh shell
+```
+
+## Spawning a New Scholar (Method 1: Docker - Recommended)
+
+```bash
+# Build and start container (first time only)
+./scripts/atlantis-container.sh build
+./scripts/atlantis-container.sh start
+
+# Create scholar workspace
+./scripts/atlantis-container.sh scholar [name]
+
+# Enter container and customize
+./scripts/atlantis-container.sh shell
+# Inside container: edit /atlantis/scholars/[name]/CLAUDE.md
+
+# Spawn the scholar
+cd /atlantis/scholars/[name]
+claude
+# Say: "Start working on your assignment"
+```
+
+## Spawning a New Scholar (Method 2: Host - Legacy)
+
+**Warning**: This runs directly on your host system. Use Docker instead.
 
 ```bash
 # 1. Create scholar workspace
@@ -68,7 +101,7 @@ The scholar will:
 - Commit to git
 - Announce completion
 
-## Spawning a New Scholar (Method 2: Full Orchestration)
+## Spawning a New Scholar (Method 3: Full Orchestration)
 
 Once Gas Town integration is complete (Phase 3), it will be:
 

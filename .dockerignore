@@ -1,0 +1,36 @@
+# Git files
+.git
+.gitignore
+
+# Build artifacts
+gt
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go build cache
+vendor/
+
+# Node modules (will be installed in container)
+node_modules/
+npm-package/node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+
+# Container outputs (these are for host viewing)
+container-outputs/
+
+# Any existing host atlantis workspace
+../atlantis/

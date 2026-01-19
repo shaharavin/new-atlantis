@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  atlantis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: new-atlantis
+
+    # Mount the codebase as read-only
+    volumes:
+      # New Atlantis codebase (read-only)
+      - ./:/new-atlantis-repo:ro
+
+      # Persistent atlantis workspace (isolated from host)
+      - atlantis-workspace:/atlantis
+
+      # Optional: Export outputs to host for review
+      - ./container-outputs:/home/atlantis/outputs
+
+    # Keep container running
+    stdin_open: true
+    tty: true
+
+    # Set environment variables
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ATLANTIS_WORKSPACE=/atlantis
+      - NEW_ATLANTIS_REPO=/new-atlantis-repo
+
+    # Resource limits (optional, adjust as needed)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+# Named volume for persistent atlantis workspace
+volumes:
+  atlantis-workspace:
+    name: new-atlantis-workspace
