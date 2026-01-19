@@ -1,0 +1,92 @@
+description = "Scholar intellectual work workflow"
+formula = "mol-scholar-work"
+version = 1
+
+[vars.topic]
+description = "The intellectual topic or question to explore"
+required = true
+
+[vars.scholar_name]
+description = "Name of the scholar agent"
+required = true
+
+[vars.academy]
+description = "The academy/atelier this work belongs to"
+required = true
+
+[[steps]]
+id = "research"
+title = "Research & exploration"
+description = """
+Research the topic: {{topic}}
+
+1. Consider the question from multiple angles
+2. Identify key concepts and debates
+3. Note relevant arguments and counterarguments
+4. Formulate your initial position
+
+Create a research-notes.md file with your findings.
+"""
+
+[[steps]]
+id = "outline"
+title = "Develop outline"
+description = """
+Create an outline for your essay on: {{topic}}
+
+1. Identify your thesis or central claim
+2. Plan your argumentative structure
+3. Organize supporting evidence and examples
+4. Consider objections and responses
+
+Create outline.md with your essay structure.
+"""
+needs = ["research"]
+
+[[steps]]
+id = "draft"
+title = "Write first draft"
+description = """
+Write the first draft of your essay on: {{topic}}
+
+1. Create essays/ directory if it doesn't exist
+2. Write 500-2000 words developing your argument
+3. Use Markdown format
+4. Include clear introduction, body, and conclusion
+5. Cite reasoning and evidence
+
+Save as essays/{{topic | slugify}}.md
+"""
+needs = ["outline"]
+
+[[steps]]
+id = "revise"
+title = "Revise and refine"
+description = """
+Review and improve your draft on: {{topic}}
+
+1. Check argument coherence and flow
+2. Strengthen weak points
+3. Clarify unclear passages
+4. Verify claims are well-supported
+5. Polish prose for clarity
+
+Update essays/{{topic | slugify}}.md with revisions.
+"""
+needs = ["draft"]
+
+[[steps]]
+id = "publish"
+title = "Publish to Archives"
+description = """
+Finalize and publish your work on: {{topic}}
+
+1. Final proofread
+2. Add any necessary references
+3. Stage your work: git add essays/
+4. Commit: git commit -m "Essay: {{topic}}"
+5. Run: gt done
+
+Your work will be submitted to the Archives for peer review.
+"""
+needs = ["revise"]
