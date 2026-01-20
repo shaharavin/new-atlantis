@@ -49,14 +49,15 @@ echo "→ Creating tmux session: $SESSION_NAME"
 docker compose -f "$PROJECT_DIR/docker-compose.yml" exec -T atlantis \
     tmux new-session -d -s "$SESSION_NAME" -c "$SCHOLAR_WORKSPACE"
 
-# Start Claude Code in the session with skip-permissions flag
-echo "→ Starting Claude Code with --dangerously-skip-permissions"
+# Start Claude Code in the session with bypass permissions mode
+# Note: Requires one-time authentication via ./scripts/authenticate-claude.sh
+echo "→ Starting Claude Code with --permission-mode bypassPermissions"
 docker compose -f "$PROJECT_DIR/docker-compose.yml" exec -T atlantis \
-    tmux send-keys -t "$SESSION_NAME" "claude --dangerously-skip-permissions" C-m
+    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --settings '{\"forceLoginMethod\":\"console\"}'" C-m
 
-# Wait a moment for Claude to initialize
+# Wait for Claude to initialize (uses persisted credentials)
 echo "→ Waiting for Claude to initialize..."
-sleep 3
+sleep 5
 
 # Update bead status
 echo "→ Updating bead status to in_progress"
@@ -77,12 +78,18 @@ docker compose -f "$PROJECT_DIR/docker-compose.yml" exec -T atlantis \
 echo ""
 echo "✅ Scholar $SCHOLAR_NAME spawned successfully!"
 echo ""
+echo "⚠️  ACTION REQUIRED:"
+echo "   1. Attach to session: docker compose exec atlantis tmux attach -t $SESSION_NAME"
+echo "   2. Press Down arrow, then Enter to accept bypass permissions"
+echo "   3. Press Enter again for security warning"
+echo "   4. Scholar will begin working"
+echo "   5. Detach with: Ctrl+B, then D"
+echo ""
 echo "Monitor progress:"
-echo "  tmux attach -t $SESSION_NAME   # Attach to session"
 echo "  docker compose exec atlantis tmux attach -t $SESSION_NAME"
 echo ""
 echo "Check workspace:"
 echo "  ./scripts/atlantis-container.sh exec \"cd $SCHOLAR_WORKSPACE && git log --oneline\""
 echo ""
-echo "View tmux sessions:"
+echo "View all sessions:"
 echo "  docker compose exec atlantis tmux ls"

@@ -58,6 +58,8 @@ COPY --chown=atlantis:atlantis <<'EOF' /home/atlantis/entrypoint.sh
 # Configure Claude Code to use API key if available
 if [ -n "$ANTHROPIC_API_KEY" ]; then
     mkdir -p /home/atlantis/.config/claude
+
+    # Create config.json with API key and permission pre-approvals
     cat > /home/atlantis/.config/claude/config.json <<CONFIG
 {
   "apiKey": "$ANTHROPIC_API_KEY",
@@ -70,6 +72,13 @@ if [ -n "$ANTHROPIC_API_KEY" ]; then
   ]
 }
 CONFIG
+
+    # Create managed-settings.json to force console (API key) authentication
+    cat > /home/atlantis/.config/claude/managed-settings.json <<MANAGED
+{
+  "forceLoginMethod": "console"
+}
+MANAGED
 fi
 
 # Execute the command passed to the container
