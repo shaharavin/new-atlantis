@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     ca-certificates \
     gnupg \
+    tmux \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js (required for Claude Code)
