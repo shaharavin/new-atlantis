@@ -15,6 +15,9 @@ services:
       # Persistent atlantis workspace (isolated from host)
       - atlantis-workspace:/atlantis
 
+      # Persist Claude Code config (OAuth tokens, settings)
+      - claude-config:/home/atlantis/.config/claude
+
       # Optional: Export outputs to host for review
       - ./container-outputs:/home/atlantis/outputs
 
@@ -38,7 +41,9 @@ services:
           cpus: '1.0'
           memory: 2G
 
-# Named volume for persistent atlantis workspace
+# Named volumes for persistent data
 volumes:
   atlantis-workspace:
     name: new-atlantis-workspace
+  claude-config:
+    name: new-atlantis-claude-config
