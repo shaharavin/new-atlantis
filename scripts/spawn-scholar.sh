@@ -53,7 +53,7 @@ docker compose -f "$PROJECT_DIR/docker-compose.yml" exec -T atlantis \
 # Note: Requires one-time authentication via ./scripts/authenticate-claude.sh
 echo "→ Starting Claude Code with --permission-mode bypassPermissions"
 docker compose -f "$PROJECT_DIR/docker-compose.yml" exec -T atlantis \
-    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --settings '{\"forceLoginMethod\":\"console\"}'" C-m
+    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --settings '{\"forceLoginMethod\":\"console\",\"model\":\"claude-opus-4-5\"}'" C-m
 
 # Wait for Claude to initialize (uses persisted credentials)
 echo "→ Waiting for Claude to initialize..."
