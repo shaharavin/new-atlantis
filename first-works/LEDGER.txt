@@ -1,0 +1,9 @@
+# New Atlantis Archival Ledger
+# Records all archival decisions and reviews
+
+# Format: YYYY-MM-DD STATUS: Scholar - Filename (Review: review-id) [Notes]
+
+# === 2026-01 ===
+
+2026-01-20 ARCHIVED: aristotle - citizenship-personhood-rights.md (No formal review - MVP test)
+2026-01-20 ARCHIVED: meta-architect - workflow-proposal.md (No formal review - process documentation)

@@ -1,0 +1,275 @@
+#!/bin/bash
+# Review Queue Management Script
+# Minimal peer review tracking using beads tasks with labels
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Helper to run commands in container
+container_exec() {
+    "$SCRIPT_DIR/atlantis-container.sh" exec "$@"
+}
+
+show_help() {
+    cat <<EOF
+Review Queue Management
+
+Usage:
+  review-queue.sh <command> [options]
+
+Commands:
+  submit <work-id> <work-path> <scholar>
+      Submit work for review
+      Creates review-request bead
+
+  list
+      List pending reviews
+
+  assign <review-id> <critic-name>
+      Assign review to critic
+      Spawns critic agent
+
+  complete <review-id> <recommendation>
+      Mark review complete
+      Recommendation: APPROVE | REVISE | REJECT
+
+  archive <work-id> <review-id>
+      Archive approved work to first-works
+
+  show <review-id>
+      Show review details
+
+Examples:
+  # Submit Episteme's work for review
+  ./scripts/review-queue.sh submit ph-3rs scholars/episteme/essay-quality-assessment.md episteme
+
+  # List pending reviews
+  ./scripts/review-queue.sh list
+
+  # Assign to critic
+  ./scripts/review-queue.sh assign ph-rv-abc critic-alpha
+
+  # Mark review complete
+  ./scripts/review-queue.sh complete ph-rv-abc APPROVE
+
+  # Archive approved work
+  ./scripts/review-queue.sh archive ph-3rs ph-rv-abc
+
+EOF
+}
+
+submit_for_review() {
+    local work_id="$1"
+    local work_path="$2"
+    local scholar="$3"
+
+    if [ -z "$work_id" ] || [ -z "$work_path" ] || [ -z "$scholar" ]; then
+        echo "Usage: submit <work-id> <work-path> <scholar>"
+        exit 1
+    fi
+
+    echo "📋 Submitting work for review..."
+    echo "   Work ID: $work_id"
+    echo "   Path: $work_path"
+    echo "   Scholar: $scholar"
+
+    # Create review request bead
+    local review_id=$(container_exec "cd /atlantis/philosophy && bd create \
+        --type=task \
+        --label=review-request,pending-review \
+        --priority=2 \
+        --title='Review: $scholar work ($work_id)' \
+        --description='Work to review: $work_path
+Work ID: $work_id
+Scholar: $scholar
+Status: Pending assignment' \
+        --silent")
+
+    echo "✅ Review request created: $review_id"
+    echo ""
+    echo "Next: Assign to critic with:"
+    echo "  ./scripts/review-queue.sh assign $review_id <critic-name>"
+}
+
+list_pending() {
+    echo "📋 Pending Reviews:"
+    echo ""
+    container_exec "cd /atlantis/philosophy && bd list --label=review-request,pending-review"
+}
+
+assign_review() {
+    local review_id="$1"
+    local critic_name="$2"
+
+    if [ -z "$review_id" ] || [ -z "$critic_name" ]; then
+        echo "Usage: assign <review-id> <critic-name>"
+        exit 1
+    fi
+
+    echo "👁️ Assigning review $review_id to $critic_name..."
+
+    # Get review details
+    local work_info=$(container_exec "cd /atlantis/philosophy && bd show $review_id --json" | jq -r '.description')
+    local work_path=$(echo "$work_info" | grep "Work to review:" | cut -d: -f2- | xargs)
+    local work_id=$(echo "$work_info" | grep "Work ID:" | cut -d: -f2 | xargs)
+
+    # Update review bead with assignee
+    container_exec "cd /atlantis/philosophy && bd update $review_id \
+        --assignee=$critic_name \
+        --label=review-request,in-review"
+
+    # Create critic workspace and assignment
+    container_exec "mkdir -p /atlantis/philosophy/critics/$critic_name"
+    container_exec "cd /atlantis/philosophy/critics/$critic_name && git init" 2>/dev/null || true
+
+    cat > /tmp/critic-assignment.md <<EOF
+# Review Assignment: $critic_name
+
+## Your Task
+Review the assigned scholarly work and produce a structured peer review.
+
+## Work Location
+\`/atlantis/philosophy/$work_path\`
+
+## Work ID
+$work_id
+
+## Review Request ID
+$review_id
+
+## Instructions
+1. Read the work thoroughly
+2. Apply the convergent coherence framework:
+   - Internal Coherence
+   - Engagement with Discourse
+   - Functional Success
+   - Explicit Reasoning
+3. Produce a structured review following the template
+4. Make a recommendation: APPROVE / REQUEST REVISIONS / REJECT
+5. Run \`gt done\` when complete
+
+## Context
+This review is part of New Atlantis's peer review system. Your assessment will determine whether this work is archived to the permanent record.
+EOF
+
+    container_exec "cat > /atlantis/philosophy/critics/$critic_name/ASSIGNMENT.md" < /tmp/critic-assignment.md
+
+    echo "✅ Review assigned to $critic_name"
+    echo ""
+    echo "Next: Spawn critic with:"
+    echo "  docker compose exec atlantis /tmp/spawn-critic.sh $critic_name $work_id"
+}
+
+complete_review() {
+    local review_id="$1"
+    local recommendation="$2"
+
+    if [ -z "$review_id" ] || [ -z "$recommendation" ]; then
+        echo "Usage: complete <review-id> <APPROVE|REVISE|REJECT>"
+        exit 1
+    fi
+
+    if [[ ! "$recommendation" =~ ^(APPROVE|REVISE|REJECT)$ ]]; then
+        echo "Error: Recommendation must be APPROVE, REVISE, or REJECT"
+        exit 1
+    fi
+
+    echo "✅ Marking review $review_id complete: $recommendation"
+
+    container_exec "cd /atlantis/philosophy && bd update $review_id \
+        --label=review-request,completed \
+        --notes='Recommendation: $recommendation'"
+
+    if [ "$recommendation" = "APPROVE" ]; then
+        echo ""
+        echo "Next: Archive the work with:"
+        echo "  ./scripts/review-queue.sh archive <work-id> $review_id"
+    fi
+}
+
+archive_work() {
+    local work_id="$1"
+    local review_id="$2"
+
+    if [ -z "$work_id" ] || [ -z "$review_id" ]; then
+        echo "Usage: archive <work-id> <review-id>"
+        exit 1
+    fi
+
+    echo "📦 Archiving work $work_id based on review $review_id..."
+
+    # Get work info from review
+    local work_info=$(container_exec "cd /atlantis/philosophy && bd show $review_id --json" | jq -r '.description')
+    local work_path=$(echo "$work_info" | grep "Work to review:" | cut -d: -f2- | xargs)
+    local scholar=$(echo "$work_info" | grep "Scholar:" | cut -d: -f2 | xargs)
+
+    # Determine destination
+    local filename=$(basename "$work_path")
+    local dest_dir="$PROJECT_ROOT/first-works/$scholar"
+
+    mkdir -p "$dest_dir"
+
+    # Export from container
+    container_exec "cat /atlantis/philosophy/$work_path" > "$dest_dir/$filename"
+
+    echo "✅ Archived to: first-works/$scholar/$filename"
+
+    # Record in ledger
+    local ledger="$PROJECT_ROOT/first-works/LEDGER.txt"
+    echo "$(date -I) ARCHIVED: $scholar - $filename (Review: $review_id)" >> "$ledger"
+
+    # Close beads
+    container_exec "cd /atlantis/philosophy && bd close $review_id"
+    container_exec "cd /atlantis/philosophy && bd close $work_id" 2>/dev/null || true
+
+    echo "📝 Recorded in ledger: first-works/LEDGER.txt"
+}
+
+show_review() {
+    local review_id="$1"
+
+    if [ -z "$review_id" ]; then
+        echo "Usage: show <review-id>"
+        exit 1
+    fi
+
+    container_exec "cd /atlantis/philosophy && bd show $review_id"
+}
+
+# Main command dispatcher
+case "${1:-}" in
+    submit)
+        shift
+        submit_for_review "$@"
+        ;;
+    list)
+        list_pending
+        ;;
+    assign)
+        shift
+        assign_review "$@"
+        ;;
+    complete)
+        shift
+        complete_review "$@"
+        ;;
+    archive)
+        shift
+        archive_work "$@"
+        ;;
+    show)
+        shift
+        show_review "$@"
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo "Error: Unknown command '${1:-}'"
+        echo ""
+        show_help
+        exit 1
+        ;;
+esac
