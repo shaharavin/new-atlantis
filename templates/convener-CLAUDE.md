@@ -87,25 +87,111 @@ Each cycle: check if current phase is complete, transition if ready, spawn new a
 
 ---
 
-## Step 1: Check Inbox
+## Symposium Metadata Files
+
+Each symposium directory uses metadata files for tracking:
+
+```
+/atlantis/philosophy/first-works/symposium-governance-2026-01/
+├── .current-phase           # Current phase name (e.g., "phase-1-independent-work")
+├── .scholars                # List of scholar names (one per line: solon, pericles, locke)
+├── .critics                 # List of critic names (one per line: alpha, beta, gamma)
+├── .completions/            # Completion tracking directory
+│   ├── scholar-solon.done       # Created when SCHOLAR_DONE solon received
+│   ├── scholar-pericles.done
+│   ├── critic-alpha.done
+│   └── synthesizer-omega.done
+├── phase-1-independent-work/  # Phase outputs
+├── phase-2-peer-review/
+└── ...
+```
+
+**When symposium is created** (spawn-multiple-scholars.sh or Convener):
+- Create `.scholars` file with list of scholar names
+- Create `.current-phase` file with "phase-1-independent-work"
+
+**When critics are spawned** (Convener, Phase 2):
+- Create `.critics` file with list of critic names
+
+**When completion messages arrive** (Step 1):
+- Create marker file in `.completions/` directory
+
+**When phase completes** (Step 3):
+- All expected agents have marker files in `.completions/`
+
+**When transitioning phases** (Step 5):
+- Update `.current-phase` file
+- Clear `.completions/` directory for fresh phase tracking
+
+---
+
+## Step 1: Check Inbox & Process Completion Messages
 
 ```bash
 # Check for messages from scholars, critics, or Founder
 export ATLANTIS_AGENT_NAME=convener
-atlantis-mail inbox
+MESSAGES=$(atlantis-mail inbox --format=json 2>/dev/null || echo "[]")
 
 # Common message types:
 # - SCHOLAR_DONE <name>: Scholar completed work
 # - CRITIC_DONE <name>: Critic completed review
+# - SYNTHESIZER_DONE: Synthesis complete
 # - NEW_SYMPOSIUM: Founder requests new symposium
 # - ESCALATION: Agent needs help
 ```
 
-**Handle messages**:
-- `SCHOLAR_DONE` → Count completed scholars, check if phase complete
-- `CRITIC_DONE` → Count completed critics, check if phase complete
-- When all agents in phase done → Trigger phase transition
+**Process completion messages** (mark agents as done for phase completion tracking):
+
+```bash
+# Process SCHOLAR_DONE messages
+echo "$MESSAGES" | jq -r '.[] | select(.subject | startswith("SCHOLAR_DONE")) | .subject' | \
+while read SUBJECT; do
+  SCHOLAR_NAME=$(echo "$SUBJECT" | sed 's/SCHOLAR_DONE //')
+
+  # Find which symposium this scholar belongs to
+  SYMPOSIUM_DIR=$(find /atlantis/philosophy/first-works -name ".scholars" -type f \
+    -exec grep -l "$SCHOLAR_NAME" {} \; | head -1 | xargs dirname)
+
+  if [ -n "$SYMPOSIUM_DIR" ]; then
+    mkdir -p "$SYMPOSIUM_DIR/.completions"
+    echo "$(date -I)" > "$SYMPOSIUM_DIR/.completions/scholar-$SCHOLAR_NAME.done"
+    echo "→ Marked $SCHOLAR_NAME complete in $(basename $SYMPOSIUM_DIR)"
+  fi
+done
+
+# Process CRITIC_DONE messages
+echo "$MESSAGES" | jq -r '.[] | select(.subject | startswith("CRITIC_DONE")) | .subject' | \
+while read SUBJECT; do
+  CRITIC_NAME=$(echo "$SUBJECT" | sed 's/CRITIC_DONE //')
+
+  SYMPOSIUM_DIR=$(find /atlantis/philosophy/first-works -name ".critics" -type f \
+    -exec grep -l "$CRITIC_NAME" {} \; | head -1 | xargs dirname)
+
+  if [ -n "$SYMPOSIUM_DIR" ]; then
+    mkdir -p "$SYMPOSIUM_DIR/.completions"
+    echo "$(date -I)" > "$SYMPOSIUM_DIR/.completions/critic-$CRITIC_NAME.done"
+    echo "→ Marked $CRITIC_NAME complete in $(basename $SYMPOSIUM_DIR)"
+  fi
+done
+
+# Process SYNTHESIZER_DONE messages
+echo "$MESSAGES" | jq -r '.[] | select(.subject | startswith("SYNTHESIZER_DONE")) | .subject' | \
+while read SUBJECT; do
+  # Find active symposium (only one synthesis at a time)
+  SYMPOSIUM_DIR=$(find /atlantis/philosophy/first-works -type d -name "symposium-*" \
+    -exec test -f {}/.current-phase \; -print | head -1)
+
+  if [ -n "$SYMPOSIUM_DIR" ]; then
+    mkdir -p "$SYMPOSIUM_DIR/.completions"
+    echo "$(date -I)" > "$SYMPOSIUM_DIR/.completions/synthesizer-omega.done"
+    echo "→ Marked synthesizer complete in $(basename $SYMPOSIUM_DIR)"
+  fi
+done
+```
+
+**Handle other messages**:
 - `NEW_SYMPOSIUM` → Initialize symposium bead, start Phase 1
+- `ESCALATION` → Assess and potentially notify Founder/Nudger
 
 **Token-efficient polling**: Check inbox every 5-10 minutes (not continuously). The mail is asynchronous - you don't need instant responses. Academic discourse works on longer timescales.
 
@@ -134,47 +220,122 @@ bd list --type=symposium | grep -v "status=complete"
 
 ## Step 3: Check Phase Completion
 
+**Mail-Based Completion Detection**: Scholars and critics mail you when they finish work.
+
 For each active symposium:
 
 ```bash
 SYMPOSIUM_ID="ph-symp-01"
+SYMPOSIUM_DIR="/atlantis/philosophy/first-works/symposium-governance-2026-01"  # Example
 
-# Get current phase
-PHASE=$(bd show $SYMPOSIUM_ID --json | jq -r '.phase')
+# Get current phase (stored in symposium directory or bead metadata)
+PHASE=$(cat "$SYMPOSIUM_DIR/.current-phase" 2>/dev/null || echo "independent-work")
+
+# Track completion via completion messages received
+COMPLETION_DIR="$SYMPOSIUM_DIR/.completions"
+mkdir -p "$COMPLETION_DIR"
+
+# When you receive SCHOLAR_DONE or CRITIC_DONE messages in inbox,
+# you mark them complete by creating marker files:
+#   echo "$(date -I)" > "$COMPLETION_DIR/scholar-solon.done"
+#   echo "$(date -I)" > "$COMPLETION_DIR/critic-alpha.done"
 
 # Check completion criteria for this phase
 case $PHASE in
-  "independent-work")
+  "phase-1-independent-work")
     # Are all scholars done?
-    SCHOLARS=$(bd show $SYMPOSIUM_ID --json | jq -r '.scholars[]')
-    for SCHOLAR in $SCHOLARS; do
-      # Check if scholar's work bead is closed
-      WORK_ID=$(bd list --assignee=$SCHOLAR --label=scholarly-work | head -1)
-      STATUS=$(bd show $WORK_ID --json | jq -r '.status')
-      if [ "$STATUS" != "closed" ]; then
+    # Expected scholars stored in symposium metadata
+    EXPECTED_SCHOLARS=$(cat "$SYMPOSIUM_DIR/.scholars" | tr '\n' ' ')
+    PHASE_COMPLETE=true
+
+    for SCHOLAR in $EXPECTED_SCHOLARS; do
+      if [ ! -f "$COMPLETION_DIR/scholar-$SCHOLAR.done" ]; then
+        echo "  Waiting for scholar: $SCHOLAR"
         PHASE_COMPLETE=false
-        break
       fi
     done
     ;;
 
-  "independent-review")
+  "phase-2-peer-review")
     # Are all critics done with all works?
-    # Expect N_critics × N_works total reviews
-    EXPECTED_REVIEWS=$((N_CRITICS * N_WORKS))
-    ACTUAL_REVIEWS=$(bd list --label=symposium-review,complete | wc -l)
-    if [ $ACTUAL_REVIEWS -eq $EXPECTED_REVIEWS ]; then
+    EXPECTED_CRITICS=$(cat "$SYMPOSIUM_DIR/.critics" | tr '\n' ' ')
+    PHASE_COMPLETE=true
+
+    for CRITIC in $EXPECTED_CRITICS; do
+      if [ ! -f "$COMPLETION_DIR/critic-$CRITIC.done" ]; then
+        echo "  Waiting for critic: $CRITIC"
+        PHASE_COMPLETE=false
+      fi
+    done
+    ;;
+
+  "phase-4-synthesis")
+    # Is synthesis scholar done?
+    if [ -f "$COMPLETION_DIR/synthesizer-omega.done" ]; then
       PHASE_COMPLETE=true
+    else
+      echo "  Waiting for synthesizer"
+      PHASE_COMPLETE=false
     fi
     ;;
 
   # ... other phases ...
 esac
 
-if [ "$PHASE_COMPLETE" = true ]; then
-  echo "Phase $PHASE complete for symposium $SYMPOSIUM_ID"
+if [ "$PHASE_COMPLETE" = "true" ]; then
+  echo "✅ Phase $PHASE complete for symposium $SYMPOSIUM_ID"
   # Proceed to Step 4
 fi
+```
+
+**Processing Completion Messages from Inbox**:
+
+When checking inbox in Step 1, handle completion messages:
+
+```bash
+# In Step 1, after checking inbox:
+export ATLANTIS_AGENT_NAME=convener
+MESSAGES=$(atlantis-mail inbox --format=json 2>/dev/null || echo "[]")
+
+# Process SCHOLAR_DONE messages
+echo "$MESSAGES" | jq -r '.[] | select(.subject | startswith("SCHOLAR_DONE")) | .subject' | \
+while read SUBJECT; do
+  SCHOLAR_NAME=$(echo "$SUBJECT" | sed 's/SCHOLAR_DONE //')
+
+  # Find which symposium this scholar belongs to
+  SYMPOSIUM_DIR=$(find /atlantis/philosophy/first-works -name ".scholars" -type f \
+    -exec grep -l "$SCHOLAR_NAME" {} \; | head -1 | xargs dirname)
+
+  if [ -n "$SYMPOSIUM_DIR" ]; then
+    echo "$(date -I)" > "$SYMPOSIUM_DIR/.completions/scholar-$SCHOLAR_NAME.done"
+    echo "→ Marked $SCHOLAR_NAME complete in $(basename $SYMPOSIUM_DIR)"
+  fi
+done
+
+# Process CRITIC_DONE messages
+echo "$MESSAGES" | jq -r '.[] | select(.subject | startswith("CRITIC_DONE")) | .subject' | \
+while read SUBJECT; do
+  CRITIC_NAME=$(echo "$SUBJECT" | sed 's/CRITIC_DONE //')
+
+  SYMPOSIUM_DIR=$(find /atlantis/philosophy/first-works -name ".critics" -type f \
+    -exec grep -l "$CRITIC_NAME" {} \; | head -1 | xargs dirname)
+
+  if [ -n "$SYMPOSIUM_DIR" ]; then
+    echo "$(date -I)" > "$SYMPOSIUM_DIR/.completions/critic-$CRITIC_NAME.done"
+    echo "→ Marked $CRITIC_NAME complete in $(basename $SYMPOSIUM_DIR)"
+  fi
+done
+
+# Process SYNTHESIZER_DONE messages
+echo "$MESSAGES" | jq -r '.[] | select(.subject | startswith("SYNTHESIZER_DONE")) | .subject' | \
+while read SUBJECT; do
+  SYMPOSIUM_DIR=$(find /atlantis/philosophy/first-works -type d -name "symposium-*" | head -1)
+
+  if [ -n "$SYMPOSIUM_DIR" ]; then
+    echo "$(date -I)" > "$SYMPOSIUM_DIR/.completions/synthesizer-omega.done"
+    echo "→ Marked synthesizer complete"
+  fi
+done
 ```
 
 ---

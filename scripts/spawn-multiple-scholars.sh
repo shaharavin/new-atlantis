@@ -157,7 +157,10 @@ This is not a generic essay - it should be recognizably grounded in your traditi
 When finished:
 1. Review your work for coherence and depth
 2. Commit: \`git add essays/ && git commit -m "Essay: $TOPIC_TITLE"\`
-3. Run: \`gt done\`
+3. **Mail the Convener**: \`atlantis-mail send convener "SCHOLAR_DONE $SCHOLAR_NAME" "Completed essay on $TOPIC_TITLE"\`
+4. Run: \`gt done\`
+
+The Convener monitors the symposium and will transition to peer review when all scholars are complete.
 
 ## Context
 Your work will be compared with ${NUM_SCHOLARS} other independent inquiries to study philosophical divergence and convergence. This tests whether AI agents develop distinct philosophical voices.

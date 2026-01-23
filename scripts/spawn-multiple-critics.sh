@@ -113,7 +113,10 @@ Apply the convergent coherence framework:
 3. Write a structured review following your role template
 4. Provide scores (1-5) for each criterion
 5. Make a recommendation: APPROVE / REQUEST REVISIONS / REJECT
-6. Run \`gt done\` when complete
+6. **Mail the Convener**: \`atlantis-mail send convener "CRITIC_DONE $CRITIC_NAME" "Completed review of $WORK_ID"\`
+7. Run \`gt done\` when complete
+
+The Convener monitors the symposium and will transition to the next phase when all reviews are complete.
 
 ## Output
 Save your review to: \`reviews/episteme-$WORK_ID-review.md\`
