@@ -131,8 +131,9 @@ docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
     tmux new-session -d -s "$SESSION_NAME" -c "/atlantis/philosophy/bibliographer"
 
 # Start Claude with Haiku model (cost-efficient)
+# Using "haiku" alias which automatically uses latest Haiku version
 docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
-    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --settings '{\"model\":\"claude-haiku-3-5\"}'" C-m
+    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --model haiku" C-m
 
 sleep 3
 
