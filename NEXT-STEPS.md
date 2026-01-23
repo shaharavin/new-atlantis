@@ -63,6 +63,66 @@ The **Governance Symposium (ph-e8x)** successfully completed all 9 phases autono
 
 ---
 
+## ✅ Session 2026-01-23 (Continued) - Bibliographer & Mail System Upgrade
+
+**Built**: Citation management role + mail-based completion detection
+
+### Bibliographer Role (NEW)
+**Files created**:
+- `templates/bibliographer-CLAUDE.md` - Role template for citation management
+- `scripts/spawn-bibliographer.sh` - Spawn script using Haiku model
+- `docs/ROLE-EVOLUTION.md` - Documents role decisions (Bibliographer vs deprecated Archivist)
+
+**Philosophy**:
+- Separate role for bibliography maintenance (not review queue management)
+- Uses Haiku model for cost efficiency (~$0.15-0.30 per run vs ~$2-3 for Opus)
+- Recognition for enabling work (governance framework principle)
+- Extracts citations, creates BibTeX entries, commits to philosophy-references.bib
+
+**Tested successfully**:
+- Processed first symposium outputs
+- Extracted 12 citations, created 103-line bibliography
+- Generated 124-line completion report
+- Cost: ~$0.20, runtime: ~90 seconds
+- Commit: 696eade in container
+
+### Mail-Based Completion Detection
+**Files created/modified**:
+- `templates/convener-CLAUDE.md` - Updated Steps 1 & 3 for mail-based tracking
+- `scripts/init-symposium-metadata.sh` - Initialize symposium metadata files
+- `scripts/spawn-multiple-scholars.sh` - Added mail completion instruction
+- `scripts/spawn-multiple-critics.sh` - Added mail completion instruction
+- `docs/MAIL-BASED-COMPLETION.md` - Complete workflow documentation
+
+**Changes**:
+- **Old system**: Convener polled files/beads every 5-10 min
+- **New system**: Scholars/critics mail "SCHOLAR_DONE <name>" / "CRITIC_DONE <name>"
+- Convener processes mail, creates `.completions/scholar-<name>.done` markers
+- Phase complete when all expected `.done` files exist
+
+**Symposium metadata structure**:
+```
+symposium-governance-2026-01/
+├── .current-phase           # Current phase name
+├── .scholars                # List of scholar names
+├── .critics                 # List of critic names
+├── .completions/            # Completion markers
+│   ├── scholar-solon.done
+│   ├── critic-alpha.done
+│   └── ...
+```
+
+**Benefits**:
+1. More efficient (no file polling)
+2. Respects autonomy (agents self-report)
+3. Reliable (messages + markers persistent)
+4. Transparent (.completions/ shows state)
+5. Scalable (any number of agents)
+
+**Testing plan**: Symposium #2 will use mail-based workflow
+
+---
+
 ## 📖 Essential Reading
 
 Before starting your next session, read these to understand what happened:
@@ -114,9 +174,11 @@ The symposium proposed 6 governance mechanisms:
 **Question**: Which should New Atlantis implement first?
 
 ### 4. Test Mail System End-to-End
-**Priority**: MEDIUM | **Effort**: 30 minutes
+**Priority**: ~~MEDIUM~~ **COMPLETED** | **Effort**: 30 minutes
 
-The mail system is installed but wasn't used in the first symposium (Convener used file monitoring instead).
+~~The mail system is installed but wasn't used in the first symposium (Convener used file monitoring instead).~~
+
+**UPDATE**: Mail-based completion detection now implemented! Convener template updated to process SCHOLAR_DONE/CRITIC_DONE messages. Will be tested in Symposium #2.
 
 **Test**:
 - Spawn a scholar with updated template
