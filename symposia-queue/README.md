@@ -100,20 +100,33 @@ When ready to run:
 cat symposia-queue/symposium-<name>.yml
 
 # 2. Update if needed (refine traditions, add context)
+nano symposia-queue/symposium-<name>.yml
 
-# 3. Create symposium bead (if using beads tracking)
-bd create --type=symposium --title="..." [...]
+# 3. Create symposium bead (NOW - activation moment)
+SYMP_ID=$(bd create \
+  --type=symposium \
+  --title="Symposium: <Title>" \
+  --description="$(head -20 symposia-queue/symposium-<name>.yml)" \
+  --labels=active-symposium \
+  --silent)
 
-# 4. Define any new scholars/traditions needed
+echo "Created symposium bead: $SYMP_ID"
+
+# 4. Move proposal to active and record bead ID
+mkdir -p active-symposia
+mv symposia-queue/symposium-<name>.yml active-symposia/
+echo "bead_id: $SYMP_ID" >> active-symposia/symposium-<name>.yml
+
+# 5. Define any new scholars/traditions needed
 # Edit tradition-examples.yml or use define-custom-tradition.sh
 
-# 5. Spawn scholars
+# 6. Spawn scholars (actual work begins)
 ./scripts/spawn-multiple-scholars.sh "<topic-title>" 3
 
-# 6. Move proposal to active
-mv symposia-queue/symposium-<name>.yml \
-   active-symposia/symposium-<name>.yml
+# 7. Convener coordinates through standard workflow
 ```
+
+**Important**: Beads are created at **activation**, not at **proposal**. The queue is documentation; beads track active work.
 
 ### 4. After Symposium Completes
 
@@ -163,13 +176,59 @@ Run a symposium when:
 - Practical: Validates or challenges current practice
 - Novel: Engages simulator framing, peer AI assignment dynamic
 
-## Integration with Project Management
+## Integration with Beads and Git
+
+### Git: Version Control for Ideas
+
+**The queue lives in git**:
+- ✅ Proposals are committed, versioned, and visible
+- ✅ History shows: who proposed, when, how it evolved
+- ✅ Enables collaboration (PRs for proposals, comments)
+- ✅ Documents intellectual development
+
+### Beads: Tracking Active Work
+
+**Beads are created at activation, not at proposal**:
+- ❌ **Don't** create beads for queued symposia
+- ✅ **Do** create bead when activating (moving from queue → active)
+- ✅ Bead tracks symposium progress (phases, completion)
+- ✅ Bead gets closed when symposium archives
+
+**Why not create beads for queue?**
+- Bead creation implies commitment to work
+- Would clutter `bd list` with ideas vs. actual work
+- Beads track progress; queue items have no progress yet
+
+**Analogy to Gas Town**: Don't create `gt-` beads for every feature idea, only for features you're building.
+
+### Three States, Two Tracking Systems
+
+| State | Git | Beads | Status |
+|-------|-----|-------|--------|
+| **Queued** | ✅ `symposia-queue/<name>.yml` | ❌ No bead | Documented idea |
+| **Active** | ✅ `active-symposia/<name>.yml` | ✅ `ph-xxxxx` bead | Work in progress |
+| **Complete** | ✅ `first-works/<name>/symposium-proposal.yml` | ✅ Bead closed | Archived |
+
+### Workflow Summary
+
+```
+[Idea] → Git commit to symposia-queue/
+         (Documented, no bead)
+
+[Activate] → Create bead, move to active-symposia/
+             (Git + bead tracking)
+
+[Complete] → Close bead, archive to first-works/
+             (Git archive, bead closed)
+```
+
+### Integration with Project Management
 
 Queue files are **documentation**, not task tracking. They describe *what* symposium to run, not *when* to run it or *who* is responsible.
 
 For task tracking, use:
 - **NEXT-STEPS.md** - Immediate priorities across all work streams
-- **Beads** - Work tracking for active symposia
+- **Beads** - Work tracking for **active** symposia only
 - **GitHub issues** - Infrastructure bugs, feature requests
 
 Queue is for **intellectual curation**, not project management.

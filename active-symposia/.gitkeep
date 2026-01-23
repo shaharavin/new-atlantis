@@ -1,0 +1,16 @@
+# Active Symposia Directory
+
+This directory contains symposia that are currently running.
+
+When a symposium is activated from the queue:
+1. Create bead: `bd create --type=symposium ...`
+2. Move proposal: `mv symposia-queue/<name>.yml active-symposia/`
+3. Add bead ID: `echo "bead_id: ph-xxxxx" >> active-symposia/<name>.yml`
+4. Spawn scholars and begin work
+
+When empty (no active symposia), this directory contains only this .gitkeep file.
+
+When a symposium completes:
+1. Close bead: `bd close ph-xxxxx`
+2. Move to archive: `mv active-symposia/<name>.yml first-works/<name>/symposium-proposal.yml`
+3. Directory becomes empty again
