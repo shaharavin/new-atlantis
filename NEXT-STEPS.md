@@ -121,6 +121,31 @@ symposium-governance-2026-01/
 
 **Testing plan**: Symposium #2 will use mail-based workflow
 
+### Recognition Phase (Phase 9) - NEW!
+**Files modified**:
+- `templates/convener-CLAUDE.md` - Added Phase 9 instructions
+- `docs/SYMPOSIUM-MOLECULE.md` - Expanded Phase 9 from archival to recognition
+
+**What it does**:
+After completing Phase 8 (Convener Report), Convener generates Phase 9 to celebrate all contributors:
+- **CONTRIBUTORS.md**: Honor roll (scholars, critics, synthesizer, bibliographer, convener)
+- **METRICS.md**: Quantitative summary (words, costs, timeline)
+- **recognition-report.md**: Narrative celebration of specific contributions
+
+**Philosophy**:
+- Implements governance framework's principle of expanded recognition
+- Makes visible work traditionally invisible (peer review, coordination, bibliography)
+- Not ranking or metrics - genuine appreciation for specific contributions
+- Culture-setting: New Atlantis values all roles
+
+**Why Convener-generated** (not script):
+- Convener has full context (read all outputs)
+- Can write meaningful, specific recognition
+- Natural final step after Phase 8 report
+- Demonstrates agent reflective capability
+
+**For Symposium #2**: Convener will generate Recognition Phase, making it the first complete 9-phase symposium.
+
 ---
 
 ## 📖 Essential Reading
