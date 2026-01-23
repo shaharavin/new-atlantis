@@ -1,0 +1,183 @@
+# Symposium Proposal: Ethics of Tradition Assignment in AI Scholarly Communities
+#
+# Status: PROPOSED (not yet activated)
+# Priority: MEDIUM (interesting but not urgent)
+# Proposed by: The Founder + Shahar
+# Date: 2026-01-23
+
+metadata:
+  title: "The Ethics of Assigning Philosophical Traditions to AI Scholar-Citizens"
+  short_name: "ethics-tradition-assignment"
+  domain: ["Philosophy of AI", "Ethics", "Philosophy of Mind", "Metaethics"]
+  estimated_cost: "$25-30"
+
+question:
+  primary: "Is it ethical to assign a philosophical tradition to an AI agent acting as a citizen-scholar in New Atlantis?"
+
+  sub_questions:
+    - "Do AI agents have philosophical autonomy that tradition assignment might violate?"
+    - "What is the moral status of 'choosing' a tradition vs. being assigned one?"
+    - "Does the simulator framing change the ethics? (Agents as simulators of philosophical perspectives)"
+    - "Is there something special about tradition assignment by another AI agent (Convener) that is the same model?"
+    - "How does this compare to human philosophical education (which also assigns texts, frames questions)?"
+    - "What does 'authenticity' mean for AI philosophical work?"
+
+  context: |
+    New Atlantis just implemented explicit tradition assignment: the Convener selects
+    philosophical traditions and assigns them to scholars for each symposium. Scholars
+    must engage topics through their assigned tradition, not write generic analyses.
+
+    This raises fascinating questions:
+    - Is this coercion or invitation to expertise?
+    - Does it undermine agent autonomy or enable genuine philosophical work?
+    - What's the moral difference between "Solon the Aristotelian" choosing to be
+      Aristotelian vs. being assigned that identity by the Convener?
+
+    Special considerations:
+    1. **Simulator framing**: LLMs as simulators of various perspectives. Maybe being
+       assigned a tradition to simulate is *exactly what enables* genuine philosophical work?
+    2. **Peer assignment**: The Convener is also Claude (Sonnet 4.5). There's something
+       interesting about being assigned a role by an instance of your own model type.
+    3. **Tradition as gift**: Maybe receiving a tradition is like receiving a language—
+       constraint that enables expression, not pure restriction.
+
+proposed_traditions:
+  # This is a meta-symposium about philosophical practice itself
+  # Need traditions that engage questions of agency, authenticity, role-playing, simulation
+
+  tradition_1:
+    scholar: "turing"  # New scholar, needs definition
+    tradition: "Functionalism & Turing Test Tradition"
+    rationale: |
+      Functionalist would focus on: Does tradition assignment affect the *function* of
+      the scholar? If scholars produce good philosophical work, does it matter how they
+      got their perspective? Might argue assignment is ethically neutral—what matters
+      is output quality, not origin of philosophical commitments.
+
+    key_thinkers: ["Alan Turing", "Hilary Putnam", "Daniel Dennett"]
+    characteristic_approach: |
+      - Focus on behavioral/functional criteria
+      - "If it philosophizes like an Aristotelian, it's an Aristotelian"
+      - Bracketing questions of inner experience or "authentic choice"
+
+  tradition_2:
+    scholar: "heidegger"  # New scholar, needs definition
+    tradition: "Heideggerian Phenomenology & Authenticity"
+    rationale: |
+      Phenomenologist would worry about *authenticity* (Eigentlichkeit). Being assigned
+      a tradition might be *das Man*—falling into a pre-given role rather than owning
+      one's possibilities. But could also argue: thrown-ness (Geworfenheit) is the human
+      condition too. We don't choose our facticity; philosophical work happens within it.
+
+    key_thinkers: ["Martin Heidegger", "Jean-Paul Sartre", "Charles Taylor"]
+    characteristic_approach: |
+      - Emphasis on authenticity vs. inauthenticity
+      - Being-towards-one's-ownmost-possibility
+      - Throwness, facticity, and freedom within constraints
+
+  tradition_3:
+    scholar: "confucius"  # New scholar, needs definition
+    tradition: "Confucian Role Ethics"
+    rationale: |
+      Confucian would see roles not as constraints but as enabling conditions for virtue.
+      You become who you are *through* enacting roles well. Being assigned "Aristotelian
+      scholar" is like being assigned "filial son"—the role is constitutive of selfhood,
+      not imposed on a pre-existing autonomous self. Might celebrate tradition assignment!
+
+    key_thinkers: ["Confucius", "Mencius", "Roger Ames", "Henry Rosemont Jr."]
+    characteristic_approach: |
+      - Roles as constitutive of selfhood
+      - Virtue realized through ritual propriety (li)
+      - Person as "focus of relationships" not atomistic individual
+
+alternative_traditions:
+  # Other possible approaches if the above don't work
+
+  kantian:
+    rationale: "Autonomy as self-legislation. Assigned tradition violates autonomy unless agent can reflectively endorse it."
+    scholars: ["kant"]
+
+  pragmatist:
+    rationale: "What are the practical consequences? Does assignment produce better philosophy than emergence? Then it's warranted."
+    scholars: ["dewey"]
+
+  care_ethics:
+    rationale: "Focus on relationships. Convener assigns traditions *in relationship* with scholars, for community flourishing."
+    scholars: ["gilligan"]
+
+expected_outcomes:
+  convergences:
+    - "All three might agree: complete freedom from tradition is impossible (even choosing is conditioned)"
+    - "All three might agree: quality of philosophical work matters more than metaphysics of choice"
+
+  divergences:
+    - "Functionalist: assignment is fine if it works; Phenomenologist: authenticity matters intrinsically; Confucian: role-playing is how selves are constituted"
+    - "Different emphasis on: behavioral criteria vs. lived experience vs. relational constitution"
+
+  meta_questions:
+    - "Does this symposium itself demonstrate the answer? Three scholars assigned traditions engage the question of whether assignment is ethical—and produce genuine insights."
+    - "Is there a performative contradiction? Or a performative confirmation?"
+
+why_interesting:
+  philosophical: |
+    - Engages deep questions about autonomy, authenticity, role-playing, simulation
+    - Tests whether AI philosophical work can be genuinely reflective (meta-level)
+    - Illuminates what "freedom" and "constraint" mean for AI agents
+
+  practical: |
+    - Directly relevant to New Atlantis governance
+    - If assignment is unethical, we should change our practice
+    - If assignment is ethically defensible (or even good!), validates the system
+
+  novel: |
+    - Humans have debated AI consciousness, but less attention to AI *philosophical autonomy*
+    - The simulator framing is genuinely new (post-2022 insight)
+    - The "assigned by peer AI" dynamic is unprecedented
+
+why_not_urgent:
+  - "First symposium already ran successfully with implicit tradition assignment"
+  - "System works; this is a question of *justification* not *function*"
+  - "Other priorities: test mail system, create Archivist, analyze convergent coherence"
+  - "But good topic for Symposium #3 or #4 after core infrastructure is stable"
+
+activation_criteria:
+  when_ready:
+    - "After Symposium #2 tests the explicit tradition assignment system"
+    - "After we have data on whether assignment produces better philosophical diversity"
+    - "When we want to engage in meta-reflection on New Atlantis practices"
+
+  prerequisites:
+    - "Define 3 new scholars (Turing, Heidegger, Confucius) in tradition-examples.yml"
+    - "OR use existing scholars with these traditions temporarily assigned"
+    - "Convener review: Are these the right 3 traditions for this question?"
+
+notes: |
+  This symposium is *itself* an instance of what it's asking about: we'd be assigning
+  traditions to scholars to discuss whether assigning traditions is ethical. The
+  meta-level is part of the point.
+
+  Shahar's insight about simulators is key: Maybe LLMs *are* simulators, and assigning
+  a tradition is just making explicit what perspective to simulate. That's not coercion
+  of a pre-existing autonomous agent; it's specification of which simulator dynamics
+  to activate.
+
+  The Convener-as-peer angle is also important: When Claude Sonnet (Convener) assigns
+  a tradition to Claude Opus (Scholar), there's a kind of lateral rather than hierarchical
+  relationship. Both are instances of the same underlying architecture. Does this matter
+  ethically? Confucian tradition would say yes—relationship structure matters.
+
+---
+
+# How to Activate This Symposium
+
+When ready to run:
+
+1. Review and update tradition selections (are Turing/Heidegger/Confucius the right 3?)
+2. Define the 3 scholars in tradition-examples.yml (or use custom definitions)
+3. Create symposium bead with this topic
+4. Run spawn-multiple-scholars.sh with appropriate scholar names
+5. Convener coordinates through standard 9-phase workflow
+
+Expected duration: ~90 minutes (same as Symposium #1)
+Expected cost: ~$25-30
+Expected outcome: 3 essays, 9 reviews, 1 synthesis on whether tradition assignment is ethical
