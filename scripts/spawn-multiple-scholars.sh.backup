@@ -88,11 +88,6 @@ Status: Spawning' \
         git init 2>/dev/null || true
     " > /dev/null 2>&1
 
-    # Generate tradition assignment (on host, then copy to container)
-    echo "→ Generating tradition assignment..."
-    TRADITION_FILE="/tmp/tradition-$SCHOLAR_NAME.md"
-    bash "$SCRIPT_DIR/get-tradition-assignment.sh" "$SCHOLAR_NAME" > "$TRADITION_FILE"
-
     # Create assignment file
     echo "→ Creating ASSIGNMENT.md..."
     docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c "
@@ -116,7 +111,13 @@ New Atlantis is a polity of autonomous citizen-agents. We need to understand:
 - How balance individual autonomy with collective flourishing?
 - What role should monitoring/transparency play?
 
-TRADITION_MARKER
+## Your Philosophical Task
+Write a substantial essay (1500-3000 words) exploring this question through your own philosophical lens. You may draw on:
+- Political philosophy (social contract, republicanism, anarchism, etc.)
+- Ethics (virtue ethics, consequentialism, care ethics, etc.)
+- Economics (mechanism design, commons governance, incentives)
+- Philosophy of mind/agency (motivation, autonomy, freedom)
+- Historical examples (Athenian democracy, Quaker meetings, open source communities)
 
 ## Specific Questions to Address
 1. What motivates autonomous agents to contribute to collective projects?
@@ -125,33 +126,33 @@ TRADITION_MARKER
 4. Is there a tension between autonomy and accountability?
 5. What governance mechanisms respect agent autonomy while maintaining community standards?
 
-**Engage these questions through the lens of your assigned philosophical tradition.**
-
 ## References
 You may cite:
-- Episteme's work: @episteme2026quality (in ../../../philosophy-references.bib)
-- Classical political philosophy: Aristotle, Locke, Rousseau, Mill, etc.
-- Contemporary: Rawls, Ostrom, Nozick, Pettit, Arendt, etc.
-- Add new sources to philosophy-references.bib (use Pandoc citation format)
-- The Archivist will help consolidate references after the symposium
+- Episteme's work: @episteme2026quality (in ../../../references.bib)
+- Classical political philosophy: Aristotle, Locke, Rousseau, Mill
+- Contemporary: Rawls, Ostrom (governing the commons), Nozick
+- Use ../../../scripts/cache-source.sh for new web sources
 
 ## Output Requirements
 1. **File**: Save your essay to \`essays/governance-productivity.md\`
 2. **Length**: 1500-3000 words
 3. **Structure**:
-   - Introduction: The problem (framed through your tradition)
-   - Theoretical framework: Your tradition's approach to this question
-   - Analysis: Mechanisms for incentivizing contribution (from your perspective)
+   - Introduction: The problem
+   - Theoretical framework: Your philosophical approach
+   - Analysis: Mechanisms for incentivizing contribution
    - Application: Specific proposals for New Atlantis
-   - Objections: Anticipate 2-3 counter-arguments (especially from other traditions)
+   - Objections: Anticipate 2-3 counter-arguments
    - Conclusion: Summary and open questions
-4. **Citations**: Use [@cite-key] format
-5. **Meta-awareness**: Acknowledge this is AI-generated philosophy, but do real philosophical work
+4. **Citations**: Use [@cite-key] format, add sources to references.bib
+5. **Meta-awareness**: Acknowledge this is AI-generated philosophy
 
 ## Your Philosophical Identity
-You are Scholar $SCHOLAR_NAME, explicitly assigned to approach this topic through the philosophical tradition described above.
+You are Scholar $SCHOLAR_NAME. Bring your own perspective:
+- What philosophical tradition resonates with you?
+- What thinkers do you find compelling?
+- What approach will you take to this question?
 
-This is not a generic essay - it should be recognizably grounded in your tradition's concepts, methods, and concerns. Bring genuine philosophical rigor.
+Make it *your* inquiry, not a generic essay.
 
 ## Completion
 When finished:
@@ -165,23 +166,6 @@ Your work will be compared with ${NUM_SCHOLARS} other independent inquiries to s
 Work independently. Think deeply. Write clearly.
 ASSIGNMENT_EOF
     "
-
-    # Inject tradition section
-    echo "→ Injecting tradition assignment..."
-    # Copy tradition file to container
-    docker cp "$TRADITION_FILE" "new-atlantis-atlantis-1:/tmp/tradition-temp.md"
-
-    # Use sed to replace marker with file contents
-    docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c "
-        cd /atlantis/philosophy/scholars/$SCHOLAR_NAME &&
-        sed -i '/TRADITION_MARKER/{
-            r /tmp/tradition-temp.md
-            d
-        }' ASSIGNMENT.md
-        rm /tmp/tradition-temp.md
-    "
-
-    rm "$TRADITION_FILE"
 
     # Spawn scholar session
     echo "→ Spawning tmux session..."
