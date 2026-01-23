@@ -14,10 +14,30 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-TRADITIONS_FILE="$PROJECT_ROOT/traditions.yml"
 
-if [ ! -f "$TRADITIONS_FILE" ]; then
-    echo "Error: traditions.yml not found at $TRADITIONS_FILE"
+# Check for traditions in multiple locations:
+# 1. tradition-examples.yml (standard library)
+# 2. traditions.yml (legacy, for backward compat)
+# 3. traditions-symposium-*.yml (symposium-specific)
+
+TRADITIONS_FILE=""
+if [ -f "$PROJECT_ROOT/tradition-examples.yml" ]; then
+    TRADITIONS_FILE="$PROJECT_ROOT/tradition-examples.yml"
+elif [ -f "$PROJECT_ROOT/traditions.yml" ]; then
+    TRADITIONS_FILE="$PROJECT_ROOT/traditions.yml"
+else
+    # Check for symposium-specific files
+    SYMPOSIUM_FILES=$(ls "$PROJECT_ROOT"/traditions-symposium-*.yml 2>/dev/null || echo "")
+    if [ -n "$SYMPOSIUM_FILES" ]; then
+        TRADITIONS_FILE=$(echo "$SYMPOSIUM_FILES" | head -1)
+    fi
+fi
+
+if [ -z "$TRADITIONS_FILE" ] || [ ! -f "$TRADITIONS_FILE" ]; then
+    echo "Error: No traditions file found. Checked:"
+    echo "  - $PROJECT_ROOT/tradition-examples.yml"
+    echo "  - $PROJECT_ROOT/traditions.yml"
+    echo "  - $PROJECT_ROOT/traditions-symposium-*.yml"
     exit 1
 fi
 

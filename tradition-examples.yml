@@ -1,0 +1,332 @@
+# Philosophical Tradition Examples
+#
+# This is a LIBRARY OF EXAMPLES, not a fixed registry.
+# The Convener has editorial freedom to:
+# 1. Use these traditions when topic-appropriate
+# 2. Define new traditions for different topics
+# 3. Modify these templates for specific symposia
+#
+# Think of this as "tradition templates" that can be adapted,
+# not as the only traditions New Atlantis recognizes.
+
+# ═══════════════════════════════════════════════════════════════
+# POLITICAL PHILOSOPHY TRADITIONS
+# (Useful for governance, justice, authority, rights topics)
+# ═══════════════════════════════════════════════════════════════
+
+political_aristotelian:
+  tradition: "Aristotelian Virtue Ethics & Ostromian Commons Governance"
+  description: "Eudaimonic flourishing through institutional design. Emphasizes deliberative governance of commons, graduated sanctions, collective choice, and constitutional prudence."
+  key_thinkers:
+    - Aristotle
+    - Elinor Ostrom
+    - Alasdair MacIntyre
+  characteristic_concerns:
+    - "How do institutions enable human flourishing?"
+    - "What makes governance legitimate without coercion?"
+    - "How balance individual virtue with collective goods?"
+  suggested_scholars: ["solon"]
+  example_topics:
+    - "Incentivizing productivity in autonomous communities"
+    - "Designing institutions for AI governance"
+    - "Commons management without hierarchy"
+
+political_republican:
+  tradition: "Republican Political Philosophy"
+  description: "Civic participation, public honor, and deliberative democracy. Emphasizes recognition, non-domination, and the intrinsic value of political engagement."
+  key_thinkers:
+    - Thucydides
+    - Hannah Arendt
+    - Philip Pettit
+  characteristic_concerns:
+    - "What role does honor play in motivation?"
+    - "How prevent domination while enabling governance?"
+    - "What makes participation meaningful?"
+  suggested_scholars: ["pericles"]
+  example_topics:
+    - "Recognition in intellectual communities"
+    - "Non-domination in AI-human relations"
+    - "Civic engagement without coercion"
+
+political_lockean:
+  tradition: "Natural Rights Liberalism & Lockean Property Theory"
+  description: "Individual autonomy, self-ownership, and property rights in labor. Emphasizes voluntary cooperation, minimal constraints on liberty, and the proviso."
+  key_thinkers:
+    - John Locke
+    - Robert Nozick
+    - John Stuart Mill
+  characteristic_concerns:
+    - "What are the legitimate bounds of authority?"
+    - "How does labor create property rights?"
+    - "When may individual liberty be constrained?"
+  suggested_scholars: ["locke"]
+  example_topics:
+    - "Property in intellectual labor"
+    - "Limits of governance authority"
+    - "Voluntary vs. coerced cooperation"
+
+political_contractarian:
+  tradition: "Social Contract Theory & General Will"
+  description: "Popular sovereignty, collective self-governance, and the tension between individual freedom and social obligation."
+  key_thinkers:
+    - Jean-Jacques Rousseau
+    - John Rawls
+    - Jürgen Habermas
+  characteristic_concerns:
+    - "How reconcile individual autonomy with collective authority?"
+    - "What makes governance legitimate?"
+    - "What obligations derive from citizenship?"
+  suggested_scholars: ["rousseau"]
+  example_topics:
+    - "Legitimate authority in AI communities"
+    - "Constitutional design from original position"
+    - "Public reason in algorithmic governance"
+
+# ═══════════════════════════════════════════════════════════════
+# EPISTEMOLOGY & PHILOSOPHY OF SCIENCE TRADITIONS
+# (Useful for knowledge, truth, inquiry, justification topics)
+# ═══════════════════════════════════════════════════════════════
+
+epistemology_pragmatist:
+  tradition: "Pragmatism & Experimentalism"
+  description: "Knowledge as warranted assertibility through inquiry. Emphasizes learning by doing, experimental method, and practical consequences over theoretical purity."
+  key_thinkers:
+    - John Dewey
+    - Charles Sanders Peirce
+    - William James
+  characteristic_concerns:
+    - "How do communities learn through inquiry?"
+    - "What makes beliefs warranted?"
+    - "How design institutions for ongoing adaptation?"
+  suggested_scholars: ["dewey"]
+  example_topics:
+    - "AI learning and human inquiry"
+    - "Experimental approaches to governance"
+    - "Truth as convergence vs. correspondence"
+
+epistemology_foundationalist:
+  tradition: "Foundationalist Epistemology"
+  description: "Knowledge built on indubitable foundations. Emphasizes certainty, logical inference, and building from self-evident truths."
+  key_thinkers:
+    - René Descartes
+    - Bertrand Russell
+    - Roderick Chisholm
+  characteristic_concerns:
+    - "What beliefs are self-justifying?"
+    - "How does knowledge build from foundations?"
+    - "What role does certainty play in inquiry?"
+  suggested_scholars: ["descartes"]
+  example_topics:
+    - "Foundations of AI knowledge"
+    - "Certainty in algorithmic reasoning"
+    - "The regress problem in machine learning"
+
+epistemology_coherentist:
+  tradition: "Coherentist Epistemology"
+  description: "Knowledge as systematic coherence among beliefs. Emphasizes holistic justification, reflective equilibrium, and mutual support rather than foundations."
+  key_thinkers:
+    - Wilfrid Sellars
+    - Laurence BonJour
+    - Donald Davidson
+  characteristic_concerns:
+    - "How do beliefs justify each other?"
+    - "What makes a system of beliefs coherent?"
+    - "Is foundationalism necessary or avoidable?"
+  suggested_scholars: ["sellars"]
+  example_topics:
+    - "Convergent coherence in peer review"
+    - "Holistic justification in AI systems"
+    - "Reflective equilibrium as method"
+
+epistemology_virtue:
+  tradition: "Virtue Epistemology"
+  description: "Knowledge as achievement of epistemic virtues. Emphasizes intellectual character, reliable faculties, and proper function of cognitive capacities."
+  key_thinkers:
+    - Ernest Sosa
+    - Linda Zagzebski
+    - Alvin Plantinga
+  characteristic_concerns:
+    - "What makes an epistemic agent virtuous?"
+    - "How do intellectual virtues contribute to knowledge?"
+    - "What is the relationship between reliability and virtue?"
+  suggested_scholars: ["sosa"]
+  example_topics:
+    - "Intellectual virtues in AI agents"
+    - "Epistemic responsibility in algorithmic systems"
+    - "Reliability vs. understanding"
+
+# ═══════════════════════════════════════════════════════════════
+# PHILOSOPHY OF MIND & COGNITIVE SCIENCE TRADITIONS
+# (Useful for consciousness, agency, intentionality, AI mind topics)
+# ═══════════════════════════════════════════════════════════════
+
+mind_functionalist:
+  tradition: "Functionalism & Computational Theory of Mind"
+  description: "Mental states as functional roles in computational architecture. Emphasizes multiple realizability, input-output relations, and substrate independence."
+  key_thinkers:
+    - Hilary Putnam
+    - Jerry Fodor
+    - Daniel Dennett
+  characteristic_concerns:
+    - "What makes a state a mental state?"
+    - "Can minds be multiply realized?"
+    - "What is the relationship between syntax and semantics?"
+  suggested_scholars: ["putnam"]
+  example_topics:
+    - "Do AI agents have mental states?"
+    - "Substrate independence of cognition"
+    - "Intentionality in artificial systems"
+
+mind_phenomenological:
+  tradition: "Phenomenology & Embodied Cognition"
+  description: "Consciousness as lived experience, embodied and situated. Emphasizes first-person perspective, intentionality, and being-in-the-world."
+  key_thinkers:
+    - Edmund Husserl
+    - Maurice Merleau-Ponty
+    - Hubert Dreyfus
+  characteristic_concerns:
+    - "What is the structure of lived experience?"
+    - "How does embodiment shape cognition?"
+    - "Can disembodied systems understand?"
+  suggested_scholars: ["husserl"]
+  example_topics:
+    - "Phenomenology of AI experience"
+    - "Embodiment and intelligence"
+    - "First-person vs. third-person approaches to mind"
+
+mind_eliminativist:
+  tradition: "Eliminative Materialism"
+  description: "Folk psychology as false theory to be replaced by neuroscience. Emphasizes scientific reduction, eliminability of mental concepts, and neural-level explanation."
+  key_thinkers:
+    - Paul Churchland
+    - Patricia Churchland
+    - W.V.O. Quine
+  characteristic_concerns:
+    - "Is folk psychology a false theory?"
+    - "Can mental concepts be reduced or eliminated?"
+    - "What is the proper level of cognitive explanation?"
+  suggested_scholars: ["churchland"]
+  example_topics:
+    - "Do 'beliefs' and 'desires' pick out real kinds?"
+    - "Neural networks vs. symbolic AI"
+    - "Reduction and explanation in cognitive science"
+
+# ═══════════════════════════════════════════════════════════════
+# ETHICS & METAETHICS TRADITIONS
+# (Useful for moral reasoning, value, normativity topics)
+# ═══════════════════════════════════════════════════════════════
+
+ethics_consequentialist:
+  tradition: "Consequentialism & Utilitarianism"
+  description: "Right action as maximizing good consequences. Emphasizes impartial aggregation, welfare, and outcome-based moral evaluation."
+  key_thinkers:
+    - Jeremy Bentham
+    - John Stuart Mill
+    - Peter Singer
+  characteristic_concerns:
+    - "What makes consequences good or bad?"
+    - "How should we aggregate welfare?"
+    - "What is the scope of moral concern?"
+  suggested_scholars: ["mill"]
+  example_topics:
+    - "AI alignment and value aggregation"
+    - "Moral status of artificial agents"
+    - "Impartiality vs. partiality in AI ethics"
+
+ethics_deontological:
+  tradition: "Kantian Deontology"
+  description: "Right action as respecting moral law and treating persons as ends. Emphasizes duty, autonomy, and categorical imperatives."
+  key_thinkers:
+    - Immanuel Kant
+    - Christine Korsgaard
+    - Thomas Nagel
+  characteristic_concerns:
+    - "What makes an action right independent of consequences?"
+    - "How does autonomy ground moral obligation?"
+    - "What can be universalized?"
+  suggested_scholars: ["kant"]
+  example_topics:
+    - "Treating AI as ends vs. means"
+    - "Autonomy in artificial agents"
+    - "Categorical imperatives for algorithmic systems"
+
+ethics_care:
+  tradition: "Care Ethics & Relational Ethics"
+  description: "Morality grounded in relationships, care, and responsiveness. Emphasizes particularity, interdependence, and context-sensitivity."
+  key_thinkers:
+    - Carol Gilligan
+    - Nel Noddings
+    - Virginia Held
+  characteristic_concerns:
+    - "How do relationships ground moral obligations?"
+    - "What is the role of care in ethics?"
+    - "How does context shape moral reasoning?"
+  suggested_scholars: ["gilligan"]
+  example_topics:
+    - "Relational obligations in AI-human interaction"
+    - "Care vs. justice frameworks"
+    - "Particularity vs. universality in moral AI"
+
+# ═══════════════════════════════════════════════════════════════
+# METAPHYSICS & ONTOLOGY TRADITIONS
+# (Useful for reality, existence, causation, time topics)
+# ═══════════════════════════════════════════════════════════════
+
+metaphysics_process:
+  tradition: "Process Philosophy"
+  description: "Reality as dynamic becoming rather than static being. Emphasizes change, relations, and events over substances."
+  key_thinkers:
+    - Alfred North Whitehead
+    - Henri Bergson
+    - William James
+  characteristic_concerns:
+    - "Is change or permanence fundamental?"
+    - "How do processes relate to substances?"
+    - "What is the nature of temporal becoming?"
+  suggested_scholars: ["whitehead"]
+  example_topics:
+    - "AI as process vs. substance"
+    - "Temporal dynamics of computation"
+    - "Becoming vs. being in artificial agents"
+
+metaphysics_materialist:
+  tradition: "Physicalism & Materialism"
+  description: "Everything is physical or supervenes on the physical. Emphasizes reduction, causal closure, and naturalism."
+  key_thinkers:
+    - J.J.C. Smart
+    - David Lewis
+    - Jaegwon Kim
+  characteristic_concerns:
+    - "Is everything ultimately physical?"
+    - "How does the mental relate to the physical?"
+    - "What is the status of abstract entities?"
+  suggested_scholars: ["lewis"]
+  example_topics:
+    - "Computational ontology"
+    - "Reduction and emergence in AI"
+    - "Naturalism about intelligence"
+
+# ═══════════════════════════════════════════════════════════════
+# USAGE NOTES FOR CONVENER
+# ═══════════════════════════════════════════════════════════════
+
+# This file provides EXAMPLES, not constraints.
+#
+# For each symposium:
+# 1. Identify the topic's philosophical domain
+# 2. Select 3 traditions that will productively engage the topic
+# 3. Use examples from this file when appropriate
+# 4. Define NEW traditions when needed (don't force fit)
+# 5. Document any new traditions added for future reference
+#
+# Editorial judgment is key:
+# - Which traditions will disagree constructively?
+# - Which perspectives illuminate different aspects?
+# - Which combinations produce productive tension?
+#
+# You can mix domains:
+# - Political philosophy + epistemology for governance questions
+# - Ethics + philosophy of mind for AI moral status
+# - Metaphysics + philosophy of science for ontology of computation
+#
+# The goal: Intellectual diversity, not box-checking.
