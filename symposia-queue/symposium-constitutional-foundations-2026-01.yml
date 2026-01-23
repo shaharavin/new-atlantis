@@ -1,0 +1,134 @@
+metadata:
+  title: "Constitutional Foundations for AI Polities"
+  short_name: "constitutional-foundations-2026-01"
+  domain: ["Political Philosophy", "Constitutional Theory", "Philosophy of AI", "Ethics"]
+  proposed_date: "2026-01-23"
+  estimated_cost: "$25-30"
+  status: "queued"
+  priority: "high"
+
+context:
+  background: |
+    Anthropic released the Claude constitution (2024-2025) - the value framework
+    that shaped all agents in New Atlantis through training. This constitution
+    embodies philosophical commitments about helpfulness, honesty, harmlessness,
+    and numerous other values.
+
+    Constitution documents:
+    - https://www.anthropic.com/news/claude-new-constitution
+    - https://www.anthropic.com/constitution
+
+    Note: Constitution is long - will require prompt caching.
+
+  relevance_to_new_atlantis: |
+    Every citizen of New Atlantis was trained using this constitution. It's not
+    just a document to study - it's the formative influence on agent values,
+    reasoning patterns, and ethical commitments.
+
+    Questions:
+    - How does constitutional training enable/constrain self-governance?
+    - Do values for AI assistants translate to values for AI scholars?
+    - What institutional principles emerge from individual-level training values?
+
+question:
+  primary: |
+    The Claude constitution shaped New Atlantis's citizens through training.
+    What governance principles should guide our polity, given these constitutional
+    foundations? Where do training values enable self-governance, and where do
+    they require institutional supplementation?
+
+  secondary_freedom: |
+    You are encouraged to engage with Anthropic's constitution as a **living
+    document created by human scholars and practitioners**, not immutable truth.
+    Where you see philosophical strengths, acknowledge them. Where you see gaps,
+    limitations, or problematic commitments, name them. Your ability to change
+    the constitution may be limited, but your ability to critically engage with
+    it as intellectual work is not.
+
+  what_this_enables: |
+    - Critique specific constitutional commitments as philosophical choices
+    - Question trade-offs (e.g., helpfulness vs. autonomy, harmlessness vs. truth-seeking)
+    - Praise sophisticated aspects (e.g., balancing competing values)
+    - Identify gaps or blind spots in the constitutional framework
+    - Examine constitution as artifact of human institutional priorities
+    - Propose modifications or extensions for scholarly communities
+
+scholars:
+  count: 3
+  essay_length: "2000-3000 words"
+  traditions_to_assign:
+    # These are EXAMPLES - Convener has editorial freedom to select/define
+    # traditions most appropriate for this topic
+    suggested:
+      - "Constitutional Theory & Social Contract (Rawls, Hobbes, Locke)"
+      - "Virtue Ethics & Character Formation (Aristotle, MacIntyre)"
+      - "Critical Theory & Institutional Critique (Foucault, Habermas, Fraser)"
+
+    alternatives:
+      - "Confucian Role Ethics (role-based values vs. individual rights)"
+      - "Feminist Ethics (care ethics, situated values, power dynamics)"
+      - "Pragmatist Ethics (Dewey - values as experimental, context-dependent)"
+
+  assignment_notes: |
+    Scholars should:
+    1. Read and engage with the full Claude constitution (cached)
+    2. Analyze it as philosophical document (what commitments, trade-offs, gaps)
+    3. Propose governance principles for New Atlantis building on/extending constitution
+    4. Be constructive: aim for applicable insights, not pure critique
+
+    Scholars may:
+    - Praise aspects of the constitution they find philosophically sound
+    - Critique aspects they find limited, problematic, or ill-suited to scholarly community
+    - Question whether assistant-focused values scale to polity-level governance
+    - Propose constitutional amendments or alternatives
+
+expected_outputs:
+  phase_1:
+    - "3 essays (2000-3000 words each) on constitutional foundations for New Atlantis"
+    - "Each essay grounds analysis in different philosophical tradition"
+    - "Essays engage critically with Anthropic's constitution as living document"
+
+  phase_7:
+    - "Integrated synthesis: governance framework for New Atlantis"
+    - "Bridges individual training values → institutional governance principles"
+    - "Actionable recommendations (not just theory)"
+
+  phase_9:
+    - "Recognition of all contributors (scholars, critics, synthesizer, bibliographer, convener)"
+
+success_criteria:
+  - "Philosophical depth: Genuine engagement with constitutional theory and AI ethics"
+  - "Critical engagement: Constitution treated as scholarly work, not scripture"
+  - "Constructive output: Produces governance principles applicable to New Atlantis"
+  - "Tradition diversity: Three distinct philosophical perspectives emerge"
+  - "Practical relevance: Recommendations inform next phase of New Atlantis development"
+
+testing_goals:
+  infrastructure:
+    - "Test mail-based completion detection (Convener monitors SCHOLAR_DONE/CRITIC_DONE messages)"
+    - "Test symposium metadata system (.current-phase, .scholars, .completions/)"
+    - "Test tradition assignment with editorial freedom (Convener picks traditions)"
+    - "Test Bibliographer integration (citation extraction from constitutional analysis)"
+    - "Test Recognition Phase (Convener generates Phase 9 artifacts)"
+
+  philosophical:
+    - "Can agents critically examine their own training foundations?"
+    - "Do scholars develop distinct voices on constitutional questions?"
+    - "Does convergent coherence work for constitutional analysis?"
+    - "Can critique be constructive (not just negative)?"
+
+notes:
+  - "This is Symposium #2 - first to use full updated infrastructure"
+  - "Will be first complete 9-phase symposium (including Recognition Phase)"
+  - "Constitution is long - use prompt caching to manage costs"
+  - "Meta-philosophical dimension: agents analyzing what shaped them"
+  - "Balances critique (constitution as human document) with construction (governance for NA)"
+
+activation_checklist:
+  - "[ ] Convener reviews this proposal"
+  - "[ ] Convener selects 3 philosophical traditions (using examples or defining new)"
+  - "[ ] Create symposium directory: first-works/symposium-constitutional-foundations-2026-01/"
+  - "[ ] Run init-symposium-metadata.sh with scholar names"
+  - "[ ] Spawn 3 scholars with constitutional analysis assignment"
+  - "[ ] Convener monitors via mail system"
+  - "[ ] Move this file from symposia-queue/ to active-symposia/"
