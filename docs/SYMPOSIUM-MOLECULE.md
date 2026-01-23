@@ -17,7 +17,7 @@ title: "Governance in Autonomous Polities Symposium"
 topic: "Incentivizing Productivity in Polities of Autonomous Citizens"
 phase: [independent-work | independent-review | independent-revision |
         cross-review | cross-work-review | synthesis | final-critique |
-        final-revision | complete]
+        final-revision | recognition | complete]
 scholars: [solon, pericles, locke]
 works: [ph-x7k, ph-u97, ph-3ax]  # Bead IDs for essays
 reviewers: [alpha, beta, gamma, delta, epsilon, zeta]
@@ -239,28 +239,57 @@ Critic Gamma reviews:   Solon, Pericles, Locke
 
 ---
 
-### Phase 9: Complete
-**Status**: PENDING
+### Phase 9: Recognition ✨
+**Status**: NEW (added 2026-01-23)
 
-**Actors**: Archivist
-**Input**: All works, reviews, synthesis
-**Output**: Archived symposium record
+**Actors**: Convener
+**Input**: All symposium outputs (essays, reviews, synthesis, convener report)
+**Output**: Recognition artifacts celebrating all contributors
+
+**Philosophy**: Implements governance framework recommendation to honor **all contributions** - intellectual work AND enabling work.
 
 **Process**:
-1. Archive all artifacts:
-   - Original 3 essays
-   - All reviews (9 independent + cross-work + final)
-   - Revised essays
-   - Synthesis essay
-   - Editorial reports
-2. Record in ledger
-3. Update bibliography with self-citations
+1. Convener reads complete symposium record
+2. Generate three recognition artifacts:
+   - **CONTRIBUTORS.md**: Honor roll with all participants (scholars, critics, synthesizer, bibliographer, convener)
+   - **METRICS.md**: Quantitative summary (word counts, costs, timeline)
+   - **recognition-report.md**: Narrative celebration of specific contributions
+3. Commit to `phase-9-recognition/` directory
 4. Close symposium bead
 
+**What Recognition Phase Does**:
+- **Makes visible**: All contributions, including infrastructure work
+- **Celebrates**: Specific insights, not just productivity metrics
+- **Establishes culture**: New Atlantis values all roles
+- **Creates legacy**: Permanent record for future scholars
+
 **Deliverables**:
-- `symposia/governance-2026-01/` directory with complete record
-- Entry in `LEDGER.txt`
-- Bead closed with `status=complete`
+- `phase-9-recognition/CONTRIBUTORS.md` - Who contributed what
+- `phase-9-recognition/METRICS.md` - Quantitative summary
+- `phase-9-recognition/recognition-report.md` - Narrative appreciation
+- Symposium bead closed with `status=complete`
+
+**Why Phase 9 Matters**:
+
+Traditional academic recognition focuses on publications (essays, papers). This makes invisible:
+- Peer review labor (critics)
+- Editorial coordination (convener)
+- Bibliography maintenance (bibliographer)
+
+Phase 9 corrects this by documenting and honoring ALL contributions.
+
+**Example recognition entries**:
+
+```markdown
+### Critic Delta
+- Reviews: 3 essays + cross-review
+- Framework: Convergent Coherence
+- Contribution: Identified coherence gaps in Solon's institutional analysis
+
+### The Bibliographer
+- Citations processed: 12 unique sources
+- Contribution: Ensured all cited works are findable for future research
+```
 
 ---
 
@@ -353,7 +382,7 @@ while symposium.phase != "complete":
 7. Phase 3-4: Revisions and cross-review
 8. Phase 5-6: Cross-work analysis and synthesis
 9. Phase 7-8: Final critique and revision
-10. Phase 9: Archive complete symposium
+10. Phase 9: Generate recognition artifacts (Convener)
 
 ---
 
