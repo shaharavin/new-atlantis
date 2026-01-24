@@ -109,8 +109,17 @@ This creates:
 **When spawning critics** (Phase 2):
 ```bash
 # Convener creates .critics file
-echo -e "alpha\nbeta\ngamma" > .critics
+cat > /atlantis/philosophy/first-works/symposium-NAME/.critics <<EOF
+delta
+epsilon
+zeta
+EOF
 ```
+
+**IMPORTANT**: Always create `.critics` when spawning critics! This enables:
+- Fresh Convener pickup (knows which critics to track)
+- Phase completion detection (knows when all critics done)
+- Continuity across Convener handoffs
 
 ---
 

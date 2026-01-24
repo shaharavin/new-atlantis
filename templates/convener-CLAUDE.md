@@ -438,8 +438,17 @@ spawn_phase_agents() {
       WORKS=$(bd show $SYMPOSIUM_ID --json | jq -r '.works[]')
       N_WORKS=$(echo "$WORKS" | wc -l)
 
+      # IMPORTANT: Create .critics file for continuity
+      SYMPOSIUM_DIR="/atlantis/philosophy/first-works/symposium-$SYMPOSIUM_NAME"
+      cat > "$SYMPOSIUM_DIR/.critics" <<EOF
+delta
+epsilon
+zeta
+EOF
+      echo "✓ Created .critics file for tracking"
+
       # Spawn 3 critics
-      for CRITIC in alpha beta gamma; do
+      for CRITIC in delta epsilon zeta; do
         echo "Spawning Critic $CRITIC for $N_WORKS works"
 
         for WORK_ID in $WORKS; do

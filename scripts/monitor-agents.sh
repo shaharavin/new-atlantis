@@ -127,25 +127,25 @@ elif [ "$AGENT_TYPE" = "coordinator" ]; then
     if [ "$HAS_CONVENER" = "yes" ] && [ "$HAS_NUDGER" = "yes" ]; then
         echo "Monitoring both convener and nudger..."
         echo ""
-        echo "Creating split view inside container..."
 
-        # Create split view INSIDE the container's tmux
-        docker compose exec -T atlantis tmux new-session -d -s monitor-coordinators \; \
-            send-keys "tmux attach -t atlantis-convener" C-m \; \
+        # Kill existing monitoring session if it exists
+        tmux kill-session -t monitor-coordinators 2>/dev/null || true
+
+        # Create split view on HOST that runs docker compose exec commands
+        tmux new-session -d -s monitor-coordinators \; \
+            send-keys "docker compose exec atlantis tmux attach -t atlantis-convener" C-m \; \
             split-window -h \; \
-            send-keys "tmux attach -t atlantis-nudger" C-m
+            send-keys "docker compose exec atlantis tmux attach -t atlantis-nudger" C-m
 
-        echo ""
         echo "Layout: Convener (left) | Nudger (right)"
         echo "Use Ctrl+B Arrow Keys to move between panes"
         echo "Use Ctrl+B Z to zoom a pane full screen"
-        echo "Use Ctrl+B D to detach from monitor"
-        echo "Use Ctrl+B D again to detach from individual agent"
+        echo "Use Ctrl+B D to detach"
         echo ""
         sleep 2
 
-        # Attach to the monitoring session inside the container
-        docker compose exec atlantis tmux attach -t monitor-coordinators
+        # Attach to the HOST monitoring session
+        tmux attach -t monitor-coordinators
 
     elif [ "$HAS_CONVENER" = "yes" ]; then
         echo "Only convener is running, attaching..."
