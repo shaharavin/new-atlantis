@@ -118,14 +118,15 @@ tmux new-session -d -s "$SESSION_NAME" -c "$WORKSPACE"
 echo "→ Starting Claude (Opus 4.5)..."
 tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --model opus" C-m
 
-sleep 3
+sleep 5
 
 # Send initial prompt
 echo "→ Sending scholarly prompt..."
 PROMPT="You are Scholar $SCHOLAR_NAME. Read ASSIGNMENT.md and begin your philosophical inquiry on '$TOPIC_TITLE'. Work independently - do not look at other scholars' work. Develop your own perspective grounded in your tradition. Save your essay to essays/constitutional-foundations.md and follow the completion instructions when done."
 
 tmux send-keys -t "$SESSION_NAME" -l "$PROMPT"
-tmux send-keys -t "$SESSION_NAME" C-m
+sleep 1
+tmux send-keys -t "$SESSION_NAME" Enter
 
 echo ""
 echo "✅ Scholar $SCHOLAR_NAME spawned successfully"

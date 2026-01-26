@@ -149,14 +149,15 @@ tmux new-session -d -s "$SESSION_NAME" -c "$WORKSPACE"
 echo "→ Starting Claude (Opus 4.5)..."
 tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --model opus" C-m
 
-sleep 3
+sleep 5
 
 # Send initial prompt
 echo "→ Sending critic prompt..."
 PROMPT="You are Critic $CRITIC_NAME. Read ASSIGNMENT.md and begin your review of the assigned work. Apply the convergent coherence framework rigorously. Save your review to the specified location and follow the completion instructions when done."
 
 tmux send-keys -t "$SESSION_NAME" -l "$PROMPT"
-tmux send-keys -t "$SESSION_NAME" C-m
+sleep 1
+tmux send-keys -t "$SESSION_NAME" Enter
 
 echo ""
 echo "✅ Critic $CRITIC_NAME spawned successfully"

@@ -177,14 +177,15 @@ tmux new-session -d -s "$SESSION_NAME" -c "$WORKSPACE"
 echo "Starting Claude (Opus 4.5)..."
 tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --model opus" C-m
 
-sleep 3
+sleep 5
 
 # Send initial prompt
 echo "Sending opposition prompt..."
 PROMPT="You are the Opposition Critic. Read ASSIGNMENT.md and begin your loyal opposition to the synthesis. Your task is to challenge, contest, and represent alternatives—not to assess quality. Read the synthesis thoroughly, then produce a substantive opposition report. Save to $OUTPUT_DIR/opposition-report.md and follow completion instructions when done."
 
 tmux send-keys -t "$SESSION_NAME" -l "$PROMPT"
-tmux send-keys -t "$SESSION_NAME" C-m
+sleep 1
+tmux send-keys -t "$SESSION_NAME" Enter
 
 echo ""
 echo "Opposition Critic spawned successfully"

@@ -10,9 +10,10 @@ cd "$PROJECT_ROOT"
 if [ "$AGENT_TYPE" = "scholar" ]; then
     echo "Monitoring scholars in split screen..."
 
-    # Get active scholar sessions (matches scholars, not critics or coordinators)
-    # Excludes: critic-, convener, nudger
-    SESSIONS=$(docker compose exec -T atlantis tmux ls 2>/dev/null | grep "atlantis-" | grep -v -E "(critic-|convener|nudger)" | cut -d: -f1 || echo "")
+    # Get active scholar sessions (atlantis-philosophy-* pattern, excluding critics/coordinators/opposition)
+    # Matches: atlantis-philosophy-rawls, atlantis-philosophy-aristotle, etc.
+    # Excludes: critic, convener, nudger, opposition, synthesizer
+    SESSIONS=$(docker compose exec -T atlantis tmux ls 2>/dev/null | grep -E "atlantis-philosophy-" | grep -v -E "(critic|convener|nudger|opposition|synthesis)" | cut -d: -f1 || echo "")
 
     if [ -z "$SESSIONS" ]; then
         echo "No active scholar sessions found"
