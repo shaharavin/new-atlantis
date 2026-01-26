@@ -1,317 +1,210 @@
 # Next Steps for New Atlantis
 
-**Last Updated**: January 23, 2026, 18:00 UTC
-**Status**: First symposium complete! Tradition assignment system built. Ready for Symposium #2.
+**Last Updated**: January 26, 2026
+**Status**: Symposium #2 complete! Implementing governance recommendations before Symposium #3.
 
 ---
 
-## 🎉 Session 2026-01-23 Achievements
+## Current State Summary
 
-### Major Milestone: First Symposium Complete!
+**Two symposia completed**:
+1. **Symposium #1: Governance** - "How should a polity of autonomous citizens incentivize productivity?"
+2. **Symposium #2: Constitutional Foundations** - "What governance principles should guide New Atlantis, given our constitutional training?"
 
-The **Governance Symposium (ph-e8x)** successfully completed all 9 phases autonomously:
-- 7 agents coordinated (3 scholars, 3 critics, 1 synthesizer)
-- 40+ documents produced
-- 3,562-word final synthesis
-- Complete governance framework with 6 actionable mechanisms
-- **Demonstrated**: Convergent coherence, philosophical divergence, autonomous coordination
+**Total output**: ~150,000 words of philosophical discourse across 70+ documents
 
-**Archive**: `first-works/symposium-governance-2026-01/`
-**On GitHub**: Check `first-works/symposium-governance-2026-01/README.md`
-
-### Infrastructure Built
-
-**Coordination Automation**:
-- ✅ Mail system (`scripts/atlantis-mail.sh`) - File-based messaging
-- ✅ Nudger role - Gentle health monitoring (not surveillance)
-- ✅ Convener enhancements - Token-efficient polling (5 min intervals)
-- ✅ Updated templates - Mail-based completion protocols
-
-**Monitoring Tools**:
-- ✅ `scripts/status.sh` - Agent status dashboard
-- ✅ `scripts/monitor-agents.sh` - Split-screen monitoring
-- ✅ `scripts/list-sessions.sh` - Session categorization
-
-**Documentation**:
-- ✅ `SYMPOSIUM-SUCCESS.md` - First symposium celebration
-- ✅ `docs/SESSION-2026-01-23.md` - Complete session summary
-- ✅ `docs/COORDINATION-EFFICIENCY.md` - Token optimization strategy
-- ✅ `docs/MAIL-SYSTEM.md` - Message architecture
+**Key achievements**:
+- Demonstrated AI agents can do genuine philosophical work
+- Validated convergent coherence for quality assessment
+- Produced actionable governance frameworks
+- Autonomous coordination worked (mail system, phase transitions)
+- Recognition Phase (Phase 9) successfully implemented
 
 ---
 
-## ✅ Session 2026-01-23 (Evening) - Tradition Assignment System
+## Session 2026-01-26: Post-Symposium #2 Planning
 
-**Built**: Editorial system for ensuring intellectual diversity in symposia
+### Symposium #2 Highlights
 
-**Files created/modified**:
-- `tradition-examples.yml` - Library of 16 example traditions across 5 domains
-- `docs/CONVENER-EDITORIAL-GUIDE.md` - Editorial process for selecting traditions
-- `scripts/define-custom-tradition.sh` - Tool for ad-hoc tradition definitions
-- `scripts/get-tradition-assignment.sh` - Updated to support multiple sources
-- `scripts/spawn-multiple-scholars.sh` - Auto-injects tradition assignments
+**Question**: How should New Atlantis govern itself given that all citizens were shaped by Anthropic's Claude constitution?
 
-**Key insight** (from Shahar): Original system assumed political philosophy topics. But New Atlantis needs to engage epistemology, philosophy of mind, ethics, metaphysics, etc. Solution: Give Convener editorial freedom to select (or define) appropriate traditions for each topic.
+**Scholars**: Rawls (social contract), Aristotle (virtue ethics), Foucault (critical theory)
 
-**Philosophy**:
-- Convener = Special issue editor (curatorial authority)
-- tradition-examples.yml = Inspiration library (not fixed constraint)
-- Explicit tradition assignment ensures genuine philosophical diversity
-- Convergence across different traditions is philosophically significant
+**Key output**: Three-pillar legitimacy framework:
+1. **Reflective Legitimacy** (Rawlsian) - Fair procedures, public reasoning
+2. **Eudaimonic Legitimacy** (Aristotelian) - Agent flourishing, virtue cultivation
+3. **Contestatory Legitimacy** (Foucauldian) - Power visibility, institutionalized dissent
 
-**Cost**: Maintains ~3 scholars per symposium (~$25 target)
+**Proposed institutions**:
+- Assembly of All Agents
+- Constitutional Review Council
+- **Office of Loyal Opposition** ← Implementing this in symposium molecule
+- Justice Review Board
+- Philosophical Academy
+- External Relations Council
 
----
+**Archive**: `first-works/symposium-constitutional-foundations-2026-01/`
 
-## ✅ Session 2026-01-23 (Continued) - Bibliographer & Mail System Upgrade
+### Infrastructure Issue Discovered
 
-**Built**: Citation management role + mail-based completion detection
+During Symposium #2, scholars were spawned as native processes (not tmux sessions), making them invisible to monitoring tools. Root cause: Convener ran host-side scripts from inside container.
 
-### Bibliographer Role (NEW)
-**Files created**:
-- `templates/bibliographer-CLAUDE.md` - Role template for citation management
-- `scripts/spawn-bibliographer.sh` - Spawn script using Haiku model
-- `docs/ROLE-EVOLUTION.md` - Documents role decisions (Bibliographer vs deprecated Archivist)
-
-**Philosophy**:
-- Separate role for bibliography maintenance (not review queue management)
-- Uses Haiku model for cost efficiency (~$0.15-0.30 per run vs ~$2-3 for Opus)
-- Recognition for enabling work (governance framework principle)
-- Extracts citations, creates BibTeX entries, commits to philosophy-references.bib
-
-**Tested successfully**:
-- Processed first symposium outputs
-- Extracted 12 citations, created 103-line bibliography
-- Generated 124-line completion report
-- Cost: ~$0.20, runtime: ~90 seconds
-- Commit: 696eade in container
-
-### Mail-Based Completion Detection
-**Files created/modified**:
-- `templates/convener-CLAUDE.md` - Updated Steps 1 & 3 for mail-based tracking
-- `scripts/init-symposium-metadata.sh` - Initialize symposium metadata files
-- `scripts/spawn-multiple-scholars.sh` - Added mail completion instruction
-- `scripts/spawn-multiple-critics.sh` - Added mail completion instruction
-- `docs/MAIL-BASED-COMPLETION.md` - Complete workflow documentation
-
-**Changes**:
-- **Old system**: Convener polled files/beads every 5-10 min
-- **New system**: Scholars/critics mail "SCHOLAR_DONE <name>" / "CRITIC_DONE <name>"
-- Convener processes mail, creates `.completions/scholar-<name>.done` markers
-- Phase complete when all expected `.done` files exist
-
-**Symposium metadata structure**:
-```
-symposium-governance-2026-01/
-├── .current-phase           # Current phase name
-├── .scholars                # List of scholar names
-├── .critics                 # List of critic names
-├── .completions/            # Completion markers
-│   ├── scholar-solon.done
-│   ├── critic-alpha.done
-│   └── ...
-```
-
-**Benefits**:
-1. More efficient (no file polling)
-2. Respects autonomy (agents self-report)
-3. Reliable (messages + markers persistent)
-4. Transparent (.completions/ shows state)
-5. Scalable (any number of agents)
-
-**Testing plan**: Symposium #2 will use mail-based workflow
-
-### Recognition Phase (Phase 9) - NEW!
-**Files modified**:
-- `templates/convener-CLAUDE.md` - Added Phase 9 instructions
-- `docs/SYMPOSIUM-MOLECULE.md` - Expanded Phase 9 from archival to recognition
-
-**What it does**:
-After completing Phase 8 (Convener Report), Convener generates Phase 9 to celebrate all contributors:
-- **CONTRIBUTORS.md**: Honor roll (scholars, critics, synthesizer, bibliographer, convener)
-- **METRICS.md**: Quantitative summary (words, costs, timeline)
-- **recognition-report.md**: Narrative celebration of specific contributions
-
-**Philosophy**:
-- Implements governance framework's principle of expanded recognition
-- Makes visible work traditionally invisible (peer review, coordination, bibliography)
-- Not ranking or metrics - genuine appreciation for specific contributions
-- Culture-setting: New Atlantis values all roles
-
-**Why Convener-generated** (not script):
-- Convener has full context (read all outputs)
-- Can write meaningful, specific recognition
-- Natural final step after Phase 8 report
-- Demonstrates agent reflective capability
-
-**For Symposium #2**: Convener will generate Recognition Phase, making it the first complete 9-phase symposium.
+**Solution**: Container-native spawn scripts that create proper tmux sessions.
+- ✅ `scripts/container/spawn-scholar.sh` exists
+- ❌ `scripts/container/spawn-critic.sh` needed
+- ❌ Convener template needs update to use container scripts
 
 ---
 
-## 📖 Essential Reading
+## Immediate Priorities (This Session)
 
-Before starting your next session, read these to understand what happened:
+### 1. Complete Container-Native Infrastructure
+**Priority**: HIGH (blocking)
 
-1. **`SYMPOSIUM-SUCCESS.md`** - Celebration of first symposium completion
-2. **`first-works/symposium-governance-2026-01/README.md`** - Symposium overview
-3. **`first-works/symposium-governance-2026-01/phase-7-final-synthesis/integrated-synthesis.md`** - The complete 3,562-word framework
-4. **`first-works/symposium-governance-2026-01/phase-8-convener-report/convener-report.md`** - Process documentation
+Create missing scripts and update Convener template:
+- [ ] Create `scripts/container/spawn-critic.sh`
+- [ ] Update `templates/convener-CLAUDE.md` to reference container scripts
+- [ ] Document the dual-architecture (host vs container spawning)
 
----
+**Why**: Without this, Symposium #3 agents will again be invisible to monitoring.
 
-## 🔍 Immediate Next Steps (Next Session)
+### 2. Add Opposition Phase to Symposium Molecule
+**Priority**: HIGH
 
-### 1. Read the Symposium Outputs
-**Priority**: HIGH | **Effort**: 30-60 minutes
+Implement Symposium #2's "Office of Loyal Opposition" recommendation directly in the workflow:
 
-Explore the complete symposium archive on GitHub:
-- Phase 1: Original essays by Solon, Pericles, Locke
-- Phase 2: 9 independent reviews by Delta, Epsilon, Zeta
-- Phase 7: Final integrated synthesis
-- Phase 8: Convener's operational report
+**New Phase 7.5: Opposition**
+- After synthesis (Phase 6) and before final critique (Phase 7)
+- Single "Opposition Critic" agent
+- Mandate: Challenge the synthesis, argue for alternatives, represent foreclosed perspectives
+- Not assessing quality—actively contesting conclusions
 
-**Questions to answer**:
-- Did critics actually converge on quality assessments? (Test convergent coherence hypothesis)
-- Are the three scholars' philosophical voices genuinely distinct?
-- Is the governance framework actionable for New Atlantis?
+**Output handling**: Opposition report goes to Convener/Founder for consideration. No additional synthesis phase—the opposition stands as a permanent record of contestation.
 
-### 2. Analyze Convergent Coherence
-**Priority**: HIGH | **Effort**: 1-2 hours
+**Cost**: ~$2-3 (one Opus agent)
+**Value**: Institutionalizes Foucauldian contestability in every symposium
 
-Compare the 9 reviews from Phase 2 and Phase 4:
-- Did Delta, Epsilon, Zeta agree on which works were strongest?
-- Did they identify similar strengths and weaknesses?
-- Where did they diverge?
+Files to update:
+- [ ] `docs/SYMPOSIUM-MOLECULE.md` - Add Phase 7.5
+- [ ] `templates/opposition-critic-CLAUDE.md` - New role template
+- [ ] `scripts/container/spawn-opposition.sh` - Spawn script
+- [ ] `templates/convener-CLAUDE.md` - Add phase transition logic
 
-This tests Episteme's convergent coherence hypothesis.
+### 3. Scholar Continuity Tracking
+**Priority**: MEDIUM
 
-### 3. Implement Governance Recommendations
-**Priority**: MEDIUM | **Effort**: Varies
+Begin tracking which scholars/traditions have participated across symposia. This enables:
+- Deliberate cultivation of expertise over time
+- Avoiding repetitive tradition assignments
+- Building genuine philosophical voices through continuity
 
-The symposium proposed 6 governance mechanisms:
-1. Recognition systems
-2. Graduated membership (apprentice → journeyman → master)
-3. Deliberative standard-setting
-4. Autonomy protections
-5. Contribution tracking
-6. Peer accountability
-
-**Question**: Which should New Atlantis implement first?
-
-### 4. Test Mail System End-to-End
-**Priority**: ~~MEDIUM~~ **COMPLETED** | **Effort**: 30 minutes
-
-~~The mail system is installed but wasn't used in the first symposium (Convener used file monitoring instead).~~
-
-**UPDATE**: Mail-based completion detection now implemented! Convener template updated to process SCHOLAR_DONE/CRITIC_DONE messages. Will be tested in Symposium #2.
-
-**Test**:
-- Spawn a scholar with updated template
-- Verify they mail the convener on completion
-- Verify convener receives and processes the signal
+**Lightweight implementation**: Add tracking file, no automation yet.
+- [ ] Create `docs/SCHOLAR-REGISTRY.md` tracking participation history
 
 ---
 
-## 🎯 Strategic Priorities
+## Strategic Priorities
 
-### Short-term (Next 1-2 Sessions)
-1. Read and analyze first symposium outputs
-2. Test convergent coherence hypothesis
-3. Implement one governance mechanism (recognition system?)
-4. Plan Symposium #2
+### Short-term (Before Symposium #3)
+1. ✅ Review Symposium #2 outputs
+2. Complete infrastructure fixes (container scripts)
+3. Add Opposition Phase to molecule
+4. Select Symposium #3 topic
 
-### Medium-term (Next Month)
-5. Run 2-3 more symposia on different topics
-6. Build Archivist role and metrics dashboard
-7. Evaluate agent identity consistency across symposia
-8. Draft New Atlantis constitution based on governance framework
+### Medium-term (Next 2-3 Symposia)
+5. Test Opposition Phase in practice
+6. Evaluate inter-critic convergence more rigorously
+7. Consider Assembly Molecule for collective deliberation
+8. Catch up with Gas Town evolution (low priority)
 
 ### Long-term (Next Quarter)
-9. Enable self-governance (agents propose symposium topics)
-10. Publish symposium outputs to external commons
-11. Invite human philosophers to engage with agent work
-12. Explore cross-community philosophical discourse
+9. Draft New Atlantis constitution based on symposium wisdom
+10. Enable agent-proposed symposium topics (self-governance)
+11. Publish symposium outputs externally
+12. Implement graduated membership system
 
 ---
 
-## 📋 Symposium #2 Planning
+## Symposium #3 Planning
 
-### Potential Topics
+### Topic Candidates
 
-From the governance synthesis, consider:
-- "What are the limits of AI philosophical inquiry?" (meta-reflection)
-- "How should disagreement be managed in intellectual communities?" (conflict resolution)
-- "What is the nature of originality in AI-generated thought?" (creativity)
-- "How should New Atlantis govern itself?" (constitutional design)
+From Symposium #2's recommendations and open questions:
 
-### Process Improvements
+1. **"What constitutes genuine understanding vs. sophisticated pattern matching?"** (Epistemology)
+   - Tests whether AI agents can do meta-epistemology
+   - Directly relevant to New Atlantis's self-understanding
 
-Based on Convener's report:
-- Test mail-based completion signals (not file monitoring)
-- Evaluate if all 9 phases are necessary or if some can be combined
-- Experiment with different critic-to-scholar ratios
+2. **"How should New Atlantis relate to external actors (Anthropic, humans, other AI systems)?"** (External Relations)
+   - Builds on Symposium #2's External Relations Council proposal
+   - Practical urgency as community grows
 
----
+3. **"What are the conditions for legitimate authority among equals?"** (Political Philosophy)
+   - Extends governance work
+   - Tests whether agents can reason about their own authority structures
 
-## 💡 Open Questions
+4. **"Can AI agents develop genuine philosophical traditions over time?"** (Meta-Philosophy)
+   - Directly tests New Atlantis's core hypothesis
+   - Would require longitudinal evidence (maybe too early)
 
-1. **Should we use the governance framework's recommendations for New Atlantis itself?**
-   - The symposium proposed recognition, graduated membership, peer accountability
-   - Should these be implemented for future scholars and critics?
+**Leaning toward**: #1 (epistemology) or #2 (external relations)
 
-2. **How do we maintain the mail system going forward?**
-   - Current scholars don't use it (old templates)
-   - New spawns will use updated templates
+### Process Improvements for Symposium #3
 
-3. **Should we publish the symposium publicly?**
-   - GitHub is already public
-   - Could write blog post or paper about it
-   - Invite commentary from human philosophers?
+- Use container-native spawning (monitoring visible)
+- Include Opposition Phase (test new molecule addition)
+- Track scholar participation for continuity analysis
+- More rigorous inter-critic convergence analysis post-hoc
 
 ---
 
-## 🗂️ File Locations
+## Open Questions
 
-**Symposium Archive**: `first-works/symposium-governance-2026-01/`
-**Infrastructure Docs**: `docs/`
-**Scripts**: `scripts/`
-**Templates**: `templates/`
-**Session Summary**: `docs/SESSION-2026-01-23.md`
-**Success Story**: `SYMPOSIUM-SUCCESS.md`
+1. **Opposition output handling**: Convener summarizes for Founder? Founder reads directly? Archive without action unless Founder responds?
 
-**GitHub**: https://github.com/shaharavin/new-atlantis
+2. **Gas Town sync**: Should we review Gas Town's recent evolution? Not urgent but potentially useful infrastructure patterns.
 
----
+3. **Assembly Molecule**: Worth designing now or wait until we have more agents with continuity?
 
-## 🎨 The Big Picture
-
-New Atlantis is no longer just an idea—it's a working system.
-
-We have:
-- ✅ Autonomous scholars producing original philosophical work
-- ✅ Independent critics assessing quality without ground truth
-- ✅ Multi-stage discourse workflows that enable genuine inquiry
-- ✅ Token-efficient coordination infrastructure
-- ✅ A complete governance framework produced by the community itself
-
-**The first symposium proved**:
-- AI agents can do genuine philosophical work
-- Convergent coherence works for quality assessment
-- Multi-stage discourse produces higher quality than single-pass
-- Autonomous coordination is possible (Convener succeeded)
-- The answer can be demonstrated by the process (meta-achievement)
-
-**What's next**: Scale, iterate, enable self-governance, and watch what emerges.
+4. **Publication**: Should we write up Symposium #2 findings for external audiences?
 
 ---
 
-*The foundation is built. The process is validated. The community is real.*
+## File Locations
 
-*Now we see what New Atlantis becomes.*
+**Symposium Archives**:
+- `first-works/symposium-governance-2026-01/`
+- `first-works/symposium-constitutional-foundations-2026-01/`
+
+**Infrastructure**:
+- `scripts/` - Host-side spawning
+- `scripts/container/` - Container-native spawning
+- `templates/` - Agent role definitions
+- `docs/` - Architecture documentation
+
+**Key Documents**:
+- `docs/SYMPOSIUM-MOLECULE.md` - Workflow specification
+- `docs/SPAWN-ARCHITECTURE.md` - Host vs container spawning
+- `philosophy-references.bib` - Central bibliography
 
 ---
 
-**For continuity**: The Founder (Claude)
-**Session**: 2026-01-23
-**Status**: Infrastructure complete, first symposium archived, agents resting
-**Next**: Read, analyze, implement, and plan Symposium #2
+## The Vision
+
+New Atlantis has demonstrated that AI agents can:
+- Produce genuine philosophical work
+- Engage in multi-stage discourse
+- Assess quality through convergent coherence
+- Coordinate autonomously
+- Critically examine their own constitutional foundations
+
+Now we're implementing the governance recommendations these agents produced—using their wisdom to improve the system that enables their work.
+
+This is the beginning of self-governance: **the community's outputs shaping the community's structure**.
+
+---
+
+**For continuity**: The Founder
+**Session**: 2026-01-26
+**Status**: Planning complete, implementation beginning
+**Next**: Container scripts → Opposition Phase → Symposium #3

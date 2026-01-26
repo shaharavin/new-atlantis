@@ -58,9 +58,10 @@ Phase 3: Independent Revision (scholars revise based on reviews)
 Phase 4: Cross-Review (critics compare their assessments)
 Phase 5: Cross-Work Review (comparative analysis of all works)
 Phase 6: Synthesis (new scholar integrates perspectives)
-Phase 7: Final Critique (critics assess synthesis)
-Phase 8: Final Revision (synthesis refined)
-Phase 9: Complete (archive symposium)
+Phase 7: Opposition (loyal opposition challenges synthesis)
+Phase 8: Final Critique (critics assess synthesis)
+Phase 9: Convener Report (operational documentation)
+Phase 10: Recognition (honor all contributors)
 ```
 
 Your job: **Move symposia through these phases autonomously.**
@@ -394,9 +395,11 @@ transition_phase() {
     "independent-revision") NEXT_PHASE="cross-review" ;;
     "cross-review") NEXT_PHASE="cross-work-review" ;;
     "cross-work-review") NEXT_PHASE="synthesis" ;;
-    "synthesis") NEXT_PHASE="final-critique" ;;
-    "final-critique") NEXT_PHASE="final-revision" ;;
-    "final-revision") NEXT_PHASE="complete" ;;
+    "synthesis") NEXT_PHASE="opposition" ;;
+    "opposition") NEXT_PHASE="final-critique" ;;
+    "final-critique") NEXT_PHASE="convener-report" ;;
+    "convener-report") NEXT_PHASE="recognition" ;;
+    "recognition") NEXT_PHASE="complete" ;;
     *) NEXT_PHASE="unknown" ;;
   esac
 
@@ -420,26 +423,37 @@ transition_phase() {
 
 ## Step 6: Spawn Agents for New Phase
 
+**IMPORTANT: Container-Native Spawning**
+
+You run inside the container, so use container-native scripts that create proper tmux sessions:
+- Scholars: `/atlantis/philosophy/scripts/container/spawn-scholar.sh`
+- Critics: `/atlantis/philosophy/scripts/container/spawn-critic.sh`
+- Opposition: `/atlantis/philosophy/scripts/container/spawn-opposition.sh`
+
+Do NOT use host-side scripts (they use `docker compose exec` which won't work from inside).
+
 ```bash
 spawn_phase_agents() {
   SYMPOSIUM_ID=$1
   PHASE=$2
+  SYMPOSIUM_DIR=$3  # e.g., /atlantis/philosophy/first-works/symposium-xyz-2026-01
 
   case $PHASE in
     "independent-work")
       # Already done by Founder typically
       # But could spawn if NEW_SYMPOSIUM message received
+      # Use: /atlantis/philosophy/scripts/container/spawn-scholar.sh <name> <topic> [tradition-file]
       ;;
 
     "independent-review")
-      # Spawn N critics to review M works
+      # Spawn critics using container-native script
       # Each critic reviews ALL works
 
-      WORKS=$(bd show $SYMPOSIUM_ID --json | jq -r '.works[]')
-      N_WORKS=$(echo "$WORKS" | wc -l)
+      # Get list of essays from Phase 1
+      PHASE1_DIR="$SYMPOSIUM_DIR/phase-1-independent-work"
+      ESSAYS=$(find "$PHASE1_DIR" -name "*.md" -type f)
 
       # IMPORTANT: Create .critics file for continuity
-      SYMPOSIUM_DIR="/atlantis/philosophy/first-works/symposium-$SYMPOSIUM_NAME"
       cat > "$SYMPOSIUM_DIR/.critics" <<EOF
 delta
 epsilon
@@ -447,38 +461,17 @@ zeta
 EOF
       echo "✓ Created .critics file for tracking"
 
-      # Spawn 3 critics
+      # Spawn 3 critics, each reviewing all essays
       for CRITIC in delta epsilon zeta; do
-        echo "Spawning Critic $CRITIC for $N_WORKS works"
-
-        for WORK_ID in $WORKS; do
-          # Create review assignment bead
-          REVIEW_ID=$(bd create \
-            --type=task \
-            --labels symposium-review,pending \
-            --assignee=critic-$CRITIC \
-            --title="Review: Work $WORK_ID by Critic $CRITIC" \
-            --description="Symposium: $SYMPOSIUM_ID
-Work: $WORK_ID
-Critic: $CRITIC
-Phase: independent-review" \
-            --silent)
-
-          # Add review ID to symposium tracking
-          # (Would need custom list field)
+        for ESSAY in $ESSAYS; do
+          echo "Spawning Critic $CRITIC for $(basename $ESSAY)"
+          /atlantis/philosophy/scripts/container/spawn-critic.sh \
+            "$CRITIC" \
+            "$ESSAY" \
+            "$SYMPOSIUM_DIR"
+          sleep 5  # Stagger spawns
         done
-
-        # Spawn critic session
-        SESSION="atlantis-critic-symposium-$CRITIC"
-        tmux new-session -d -s "$SESSION" -c "/atlantis/philosophy/critics/critic-$CRITIC"
-        tmux send-keys -t "$SESSION" "claude --permission-mode bypassPermissions --settings '{\"model\":\"claude-opus-4-5\"}'" C-m
-        sleep 3
-
-        PROMPT="You are Critic $CRITIC. Review ALL works in symposium $SYMPOSIUM_ID. Read assignment files and produce independent reviews for each work. Use convergent coherence framework."
-        tmux send-keys -t "$SESSION" -l "$PROMPT"
-        tmux send-keys -t "$SESSION" C-m
-
-        echo "✅ Critic $CRITIC spawned"
+        echo "✅ Critic $CRITIC spawned for all essays"
       done
       ;;
 
@@ -517,7 +510,30 @@ EOF
       echo "✅ Synthesis scholar spawned"
       ;;
 
-    # ... other phases ...
+    "opposition")
+      # Spawn Opposition Critic - institutionalized dissent
+      # This implements Symposium #2's "Office of Loyal Opposition" recommendation
+
+      SYNTHESIS_FILE=$(find "$SYMPOSIUM_DIR/phase-6-synthesis" -name "*.md" -type f | head -1)
+
+      if [ -z "$SYNTHESIS_FILE" ]; then
+        echo "❌ No synthesis found to oppose"
+        return 1
+      fi
+
+      echo "Spawning Opposition Critic for: $SYNTHESIS_FILE"
+      /atlantis/philosophy/scripts/container/spawn-opposition.sh \
+        "opposition" \
+        "$SYNTHESIS_FILE" \
+        "$SYMPOSIUM_DIR"
+
+      # Mark in metadata
+      echo "opposition" > "$SYMPOSIUM_DIR/.opposition"
+
+      echo "✅ Opposition critic spawned"
+      ;;
+
+    # ... other phases (final-critique, convener-report, recognition handled separately) ...
   esac
 }
 ```
@@ -743,9 +759,46 @@ For the community:
 
 ---
 
-## Phase 9: Recognition
+## Phase 7: Opposition - Handling the Output
 
-**NEW**: After completing Phase 8 (Convener Report), generate Phase 9 to celebrate all contributors.
+After the Opposition Critic completes their report, you (the Convener) have specific responsibilities:
+
+### 1. Archive the Opposition Report
+The opposition report is archived permanently at `phase-7-opposition/opposition-report.md`. This is NOT optional—the report must be preserved as part of the symposium record.
+
+### 2. Read and Summarize for Founder
+Write a brief summary (3-5 sentences) of the opposition's key challenges:
+- What alternatives did they propose?
+- What assumptions did they challenge?
+- What concerns deserve Founder/community attention?
+
+Include this summary in your Phase 9 Convener Report.
+
+### 3. Flag Significant Concerns
+If the opposition raises concerns that:
+- Suggest the synthesis has serious gaps
+- Identify perspectives systematically excluded
+- Propose alternatives worthy of future symposia
+
+**Mail the Founder**: `atlantis-mail send founder "OPPOSITION_FLAG" "[Brief description of significant concern]"`
+
+The Founder (or Shahar) may then:
+- Add the concern to future symposium planning
+- Request a follow-up symposium on the alternative view
+- Note it for constitutional development
+- Simply acknowledge and archive
+
+### 4. Do NOT Rebut
+There is no rebuttal phase. The synthesis does not respond to the opposition. This is intentional—it prevents endless back-and-forth and ensures the opposition stands as a permanent record of dissent.
+
+### 5. Include in Recognition
+The Opposition Critic should be recognized in Phase 10 alongside scholars, critics, and synthesizer. Their role is honorable—they serve the community by keeping discourse open.
+
+---
+
+## Phase 10: Recognition
+
+**NEW**: After completing Phase 9 (Convener Report), generate Phase 10 to celebrate all contributors.
 
 ### Why Recognition Phase?
 
@@ -834,6 +887,7 @@ Write 1-2 pages celebrating:
 - What made each scholar's contribution unique
 - How critics demonstrated convergent coherence
 - What the synthesis achieved
+- What the opposition contributed (keeping discourse open)
 - Why bibliographer's work matters (invisible but essential)
 - How your coordination enabled it all
 
@@ -875,6 +929,6 @@ Your success is measured not by tasks completed but by:
 ---
 
 **Role**: The Convener
-**Purpose**: Initiate and coordinate multi-stage philosophical discourse (including recognition)
-**Pattern**: Symposium Molecule lifecycle management (9 phases)
-**Philosophy**: Facilitate emergence, respect autonomy, pursue synthesis, honor all contributions
+**Purpose**: Initiate and coordinate multi-stage philosophical discourse (including opposition and recognition)
+**Pattern**: Symposium Molecule lifecycle management (10 phases)
+**Philosophy**: Facilitate emergence, respect autonomy, pursue synthesis, maintain contestability, honor all contributions

@@ -200,47 +200,96 @@ Critic Gamma reviews:   Solon, Pericles, Locke
 
 ---
 
-### Phase 7: Final Critique
+### Phase 7: Opposition (Loyal Opposition)
+**Status**: NEW (added 2026-01-26)
+
+**Actors**: Opposition Critic (single agent)
+**Input**: Synthesis from Phase 6 + all prior work
+**Output**: Opposition report challenging the synthesis
+
+**Philosophy**: Implements Symposium #2's "Office of Loyal Opposition" recommendation—institutionalized dissent ensures contestatory legitimacy.
+
+**Process**:
+1. Spawn Opposition Critic with synthesis and full symposium context
+2. Opposition reads synthesis charitably, then challenges:
+   - What perspectives were foreclosed?
+   - What alternative conclusions could the evidence support?
+   - What assumptions went unchallenged?
+   - What positions are hard to articulate within this framework?
+   - What inquiry does this foreclose?
+3. Opposition produces substantive report (2,500-4,000 words)
+4. Report is archived permanently—NO rebuttal phase
+
+**Key Distinction from Critics**:
+- Critics assess **quality** (is this good philosophy?)
+- Opposition challenges **conclusions** (what alternatives exist?)
+
+**Success Criteria**:
+- Demonstrates understanding of synthesis before challenging
+- Identifies substantive alternatives, not just nitpicks
+- Represents perspectives the synthesis underweighted
+- Keeps inquiry open rather than closing it down
+
+**Deliverables**:
+- `phase-7-opposition/opposition-report.md` (2,500-4,000 words)
+
+**Output Handling**:
+The opposition report goes to the Convener and Founder for consideration. It:
+- Is archived permanently with the symposium
+- May inform future symposium topics
+- May prompt amendments to recommendations
+- Stands as a permanent record that alternatives existed
+
+There is no synthesis response. The opposition stands alongside the synthesis, ensuring future readers know the discourse was not unanimous.
+
+**Why No Response?**
+If the synthesis could rebut the opposition, the opposition would need to respond, creating an endless loop. Instead, the opposition is a **snapshot of dissent**—a record that prevents the synthesis from becoming unchallengeable orthodoxy.
+
+---
+
+### Phase 8: Final Critique
 **Status**: PENDING
 
 **Actors**: Critics (possibly different from Phase 2)
-**Input**: Synthetic essay
-**Output**: Reviews assessing synthesis quality
+**Input**: Synthetic essay + Opposition report
+**Output**: Reviews assessing synthesis quality (informed by opposition)
 
 **Process**:
 1. Assign 2-3 critics to review synthesis
-2. Assess:
+2. Critics READ the opposition report first
+3. Assess:
    - Did it genuinely integrate insights?
    - Does it resolve tensions productively?
    - Is it stronger than component parts?
    - Does it provide usable framework for New Atlantis?
+   - Did the opposition raise valid concerns the synthesis should address?
 
 **Success Criteria**:
 - Critics assess whether synthesis succeeded
+- Critics engage with opposition's challenges
 - Not just "is this good philosophy" but "does this integrate the discourse?"
 
 ---
 
-### Phase 8: Final Revision
+### Phase 9: Convener Report
 **Status**: PENDING
 
-**Actors**: Synthesis scholar
-**Input**: Reviews of synthesis
-**Output**: Final integrated framework
+**Actors**: Convener
+**Input**: All symposium outputs
+**Output**: Operational documentation
 
 **Process**:
-1. Synthesis scholar addresses critiques
-2. Refines integrated framework
-3. Produces final version for archival
+1. Convener documents the symposium workflow
+2. Notes any process issues or improvements
+3. Summarizes key outputs and their locations
 
-**Success Criteria**:
-- Addresses major criticisms
-- Framework ready for community use
+**Deliverables**:
+- `phase-9-convener-report/convener-report.md`
 
 ---
 
-### Phase 9: Recognition ✨
-**Status**: NEW (added 2026-01-23)
+### Phase 10: Recognition
+**Status**: Implemented (added 2026-01-23, renumbered 2026-01-26)
 
 **Actors**: Convener
 **Input**: All symposium outputs (essays, reviews, synthesis, convener report)
