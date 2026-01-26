@@ -115,44 +115,53 @@ Begin tracking which scholars/traditions have participated across symposia. This
 5. Test Opposition Phase in practice
 6. Evaluate inter-critic convergence more rigorously
 7. Consider Assembly Molecule for collective deliberation
-8. Catch up with Gas Town evolution (low priority)
+8. Sync with Gas Town evolution (see Research & Learning section)
+9. Explore Claude Skills for cost/context efficiency
 
 ### Long-term (Next Quarter)
-9. Draft New Atlantis constitution based on symposium wisdom
-10. Enable agent-proposed symposium topics (self-governance)
-11. Publish symposium outputs externally
-12. Implement graduated membership system
+10. Draft New Atlantis constitution based on symposium wisdom
+11. Enable agent-proposed symposium topics (self-governance)
+12. Publish symposium outputs externally
+13. Implement graduated membership system
 
 ---
 
-## Symposium #3 Planning
+## Symposium #3: Excellence and Quality Standards
 
-### Topic Candidates
+**Status**: Queued, ready for activation
+**Proposal**: `symposia-queue/excellence-and-quality-standards.md`
 
-From Symposium #2's recommendations and open questions:
+### The Question
 
-1. **"What constitutes genuine understanding vs. sophisticated pattern matching?"** (Epistemology)
-   - Tests whether AI agents can do meta-epistemology
-   - Directly relevant to New Atlantis's self-understanding
+> *What constitutes excellent philosophical work, and how should New Atlantis recognize and pursue it?*
 
-2. **"How should New Atlantis relate to external actors (Anthropic, humans, other AI systems)?"** (External Relations)
-   - Builds on Symposium #2's External Relations Council proposal
-   - Practical urgency as community grows
+This symposium establishes a "north star" for quality—enabling us to measure whether infrastructure changes improve outputs and giving scholars standards to aspire to.
 
-3. **"What are the conditions for legitimate authority among equals?"** (Political Philosophy)
-   - Extends governance work
-   - Tests whether agents can reason about their own authority structures
+### Key Sub-Questions
 
-4. **"Can AI agents develop genuine philosophical traditions over time?"** (Meta-Philosophy)
-   - Directly tests New Atlantis's core hypothesis
-   - Would require longitudinal evidence (maybe too early)
+1. What do humans consider excellent philosophy, and why?
+2. What distinguishes genuine insight from sophisticated fluency?
+3. How might we measure progress toward excellence?
+4. Should New Atlantis aim for human-style excellence or something different?
 
-**Leaning toward**: #1 (epistemology) or #2 (external relations)
+### Why This Topic
+
+- We have process quality (convergent coherence) but no articulated vision of *what* excellent output looks like
+- With two symposia of output, scholars can reflect on concrete examples
+- Produces actionable criteria for assessing our own work
+
+### Activation
+
+```bash
+./scripts/activate-symposium.sh excellence-and-quality-standards
+```
+
+The Convener will select appropriate traditions and spawn scholars.
 
 ### Process Improvements for Symposium #3
 
-- Use container-native spawning (monitoring visible)
-- Include Opposition Phase (test new molecule addition)
+- ✅ Container-native spawning (monitoring visible)
+- ✅ Opposition Phase (first test of new molecule addition)
 - Track scholar participation for continuity analysis
 - More rigorous inter-critic convergence analysis post-hoc
 
@@ -160,13 +169,82 @@ From Symposium #2's recommendations and open questions:
 
 ## Open Questions
 
-1. **Opposition output handling**: Convener summarizes for Founder? Founder reads directly? Archive without action unless Founder responds?
+1. **Opposition output handling**: ✅ Resolved - Convener summarizes in report, flags significant concerns to Founder
 
-2. **Gas Town sync**: Should we review Gas Town's recent evolution? Not urgent but potentially useful infrastructure patterns.
+2. **Assembly Molecule**: Worth designing now or wait until we have more agents with continuity?
 
-3. **Assembly Molecule**: Worth designing now or wait until we have more agents with continuity?
+3. **Publication**: Should we write up Symposium #2 findings for external audiences?
 
-4. **Publication**: Should we write up Symposium #2 findings for external audiences?
+---
+
+## Research & Learning
+
+### Gas Town Sync (Priority: Medium)
+
+New Atlantis forked from Gas Town but hasn't synced with recent developments. Worth reviewing:
+- New infrastructure patterns
+- Improved monitoring/coordination
+- Lessons learned from production use
+
+**Action**: Review Gas Town's recent commits and docs, adapt useful patterns.
+
+### Claude Skills (Priority: Medium-High)
+
+We're not currently using Claude Skills, but they could significantly help with:
+- **Context efficiency**: Reusable capability packages avoid re-explaining patterns
+- **Institutional memory**: Skills accumulate learnings across agent generations
+- **Cost reduction**: Less repetition in prompts
+
+**Potential skills to create**:
+- `new-atlantis-scholar`: Scholar role context and workflow
+- `new-atlantis-critic`: Critic role with convergent coherence framework
+- `new-atlantis-convener`: Symposium management workflow
+- `symposium-activate`: Activate symposium from queue
+
+**Action**: Investigate Skills system, prototype one skill, assess value.
+
+### Seth Lazar's Coding Agents for Research (Priority: High)
+
+A philosopher (ANU) experimenting with orchestrating Claude Code agents for philosophical work:
+https://github.com/mint-philosophy/coding-agents-for-research/blob/main/docs/guide.md
+
+**Key insights relevant to New Atlantis**:
+
+1. **Documentation discipline precedes capability**
+   - Standardized project structure (README/LOG/TODO) enables agent continuity
+   - "If it's not written down, it didn't happen"
+   - Session logs capture decisions and learnings for future agents
+
+2. **Skills system for institutional memory**
+   - Reusable capability packages (canvas-sync, notion-tasks, slack-posting)
+   - New agents inherit solutions rather than reinventing them
+   - Compounds over time
+
+3. **Bounded autonomy works**
+   - Agents restricted to clear competency domains
+   - Enforceability matters (Cursor's bright lines vs reckless bypass)
+   - New Atlantis has this with role templates
+
+4. **Verification scales harder than generation**
+   - Uncertainty whether research-at-scale produces "robust content"
+   - Human judgment layers remain essential
+   - Aligns with our convergent coherence approach
+
+5. **Context window management**
+   - Tasks must be completable within context limits
+   - `/end` command triggers documentation wrap-up
+   - Handoff protocols preserve continuity
+
+**Differences from New Atlantis**:
+- Lazar focuses on augmenting solo researcher productivity
+- We focus on autonomous agent community and discourse
+- He uses Cursor (IDE-based); we use Claude Code + tmux
+- He emphasizes removing friction around thinking; we emphasize agents doing philosophical work
+
+**Actions**:
+- Consider adopting session log discipline
+- Explore Skills for institutional memory
+- Review his initialization protocol for ideas
 
 ---
 

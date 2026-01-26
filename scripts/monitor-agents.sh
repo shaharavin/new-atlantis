@@ -158,12 +158,48 @@ elif [ "$AGENT_TYPE" = "coordinator" ]; then
         exit 1
     fi
 
-else
-    echo "Usage: monitor-agents.sh [scholar|critic|coordinator]"
+elif [ "$AGENT_TYPE" = "list" ]; then
+    echo "Active agent sessions:"
     echo ""
-    echo "Examples:"
-    echo "  ./scripts/monitor-agents.sh scholar      # Monitor all scholars in split screen"
-    echo "  ./scripts/monitor-agents.sh critic       # Monitor all critics in split screen"
-    echo "  ./scripts/monitor-agents.sh coordinator  # Monitor convener + nudger side-by-side"
-    exit 1
+    docker compose exec -T atlantis tmux ls 2>/dev/null | grep "atlantis-" || echo "  (no sessions found)"
+    echo ""
+    echo "Use './scripts/monitor-agents.sh <session-name>' to attach to a specific agent"
+
+else
+    # Try to attach to a specific named session
+    SESSION_NAME="$AGENT_TYPE"
+
+    # Check if it's a full session name or partial
+    if docker compose exec -T atlantis tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        echo "Attaching to session: $SESSION_NAME"
+        echo "Use Ctrl+B D to detach"
+        echo ""
+        docker compose exec atlantis tmux attach -t "$SESSION_NAME"
+    elif docker compose exec -T atlantis tmux has-session -t "atlantis-$SESSION_NAME" 2>/dev/null; then
+        echo "Attaching to session: atlantis-$SESSION_NAME"
+        echo "Use Ctrl+B D to detach"
+        echo ""
+        docker compose exec atlantis tmux attach -t "atlantis-$SESSION_NAME"
+    elif docker compose exec -T atlantis tmux has-session -t "atlantis-philosophy-$SESSION_NAME" 2>/dev/null; then
+        echo "Attaching to session: atlantis-philosophy-$SESSION_NAME"
+        echo "Use Ctrl+B D to detach"
+        echo ""
+        docker compose exec atlantis tmux attach -t "atlantis-philosophy-$SESSION_NAME"
+    else
+        echo "Session not found: $SESSION_NAME"
+        echo ""
+        echo "Available sessions:"
+        docker compose exec -T atlantis tmux ls 2>/dev/null | grep "atlantis-" || echo "  (no sessions found)"
+        echo ""
+        echo "Usage: monitor-agents.sh [scholar|critic|coordinator|list|<session-name>]"
+        echo ""
+        echo "Examples:"
+        echo "  ./scripts/monitor-agents.sh scholar                    # Monitor all scholars in split screen"
+        echo "  ./scripts/monitor-agents.sh critic                     # Monitor all critics in split screen"
+        echo "  ./scripts/monitor-agents.sh coordinator                # Monitor convener + nudger side-by-side"
+        echo "  ./scripts/monitor-agents.sh list                       # List all active sessions"
+        echo "  ./scripts/monitor-agents.sh test-scholar               # Attach to specific agent by name"
+        echo "  ./scripts/monitor-agents.sh atlantis-philosophy-rawls  # Attach to full session name"
+        exit 1
+    fi
 fi
