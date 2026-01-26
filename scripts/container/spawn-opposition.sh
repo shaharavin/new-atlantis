@@ -156,9 +156,16 @@ Your report (~2,500-4,000 words) should include:
 
 When finished:
 1. Save your report to: $OUTPUT_DIR/opposition-report.md
-2. Commit: \`git add . && git commit -m "Opposition: Challenge to synthesis"\`
-3. Mail the Convener: \`atlantis-mail send convener "OPPOSITION_DONE" "Completed opposition report"\`
-4. Run: \`gt done\`
+2. Commit your report:
+   \`\`\`bash
+   git add . && git commit -m "Opposition: Challenge to synthesis"
+   \`\`\`
+3. Set your identity and mail the Convener:
+   \`\`\`bash
+   export ATLANTIS_AGENT_NAME=opposition
+   atlantis-mail send convener "OPPOSITION_DONE" "Completed opposition report"
+   \`\`\`
+4. Exit Claude (type /exit or Ctrl+C)
 
 ---
 

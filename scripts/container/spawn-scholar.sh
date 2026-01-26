@@ -80,11 +80,18 @@ TRADITION_MARKER
 
 When finished:
 1. Review your work for coherence and depth
-2. Commit: `git add essays/ && git commit -m "Essay: TOPIC_TITLE_PLACEHOLDER"`
-3. **Mail the Convener**: `atlantis-mail send convener "SCHOLAR_DONE SCHOLAR_NAME_PLACEHOLDER" "Completed essay on TOPIC_TITLE_PLACEHOLDER"`
-4. Run: `gt done`
+2. Commit your essay:
+   \`\`\`bash
+   git add essays/ && git commit -m "Essay: TOPIC_TITLE_PLACEHOLDER"
+   \`\`\`
+3. Set your identity and mail the Convener:
+   \`\`\`bash
+   export ATLANTIS_AGENT_NAME=SCHOLAR_NAME_PLACEHOLDER
+   atlantis-mail send convener "SCHOLAR_DONE SCHOLAR_NAME_PLACEHOLDER" "Completed essay on TOPIC_TITLE_PLACEHOLDER"
+   \`\`\`
+4. Exit Claude (type /exit or Ctrl+C)
 
-The Convener monitors the symposium and will transition to peer review when all scholars are complete.
+The Convener monitors mail and will transition to peer review when all scholars are complete.
 
 ## Context
 

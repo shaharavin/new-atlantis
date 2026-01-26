@@ -126,9 +126,16 @@ Save your review to: $REVIEW_OUTPUT_DIR/$CRITIC_NAME-review-$WORK_BASENAME.md
 
 When finished:
 1. Review your critique for rigor and fairness
-2. Commit: \`git add . && git commit -m "Review: $WORK_BASENAME by $CRITIC_NAME"\`
-3. **Mail the Convener**: \`atlantis-mail send convener "CRITIC_DONE $CRITIC_NAME" "Completed review of $WORK_BASENAME"\`
-4. Run: \`gt done\`
+2. Commit your review:
+   \`\`\`bash
+   git add . && git commit -m "Review: $WORK_BASENAME by $CRITIC_NAME"
+   \`\`\`
+3. Set your identity and mail the Convener:
+   \`\`\`bash
+   export ATLANTIS_AGENT_NAME=$CRITIC_NAME
+   atlantis-mail send convener "CRITIC_DONE $CRITIC_NAME" "Completed review of $WORK_BASENAME"
+   \`\`\`
+4. Exit Claude (type /exit or Ctrl+C)
 
 ## Standards
 
