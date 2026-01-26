@@ -3,37 +3,37 @@
 
 set -e
 
-SYMPOSIUM_ID="${1:-}"
+SYMPOSIUM_DIR="${1:-}"
 
-if [ -z "$SYMPOSIUM_ID" ]; then
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+if [ -z "$SYMPOSIUM_DIR" ]; then
     cat <<EOF
-Usage: spawn-convener.sh <symposium-id>
+Usage: spawn-convener.sh <symposium-dir>
 
-Example: spawn-convener.sh ph-e8x
+Example: spawn-convener.sh first-works/symposium-excellence-and-quality-standards-2026-01
 
 The Convener will:
-1. Monitor the symposium phase status
-2. Transition phases when complete
-3. Spawn agents for each new phase
-4. Archive outputs
+1. Read the symposium proposal
+2. Select appropriate philosophical traditions
+3. Spawn scholars for Phase 1
+4. Manage all 10 phases autonomously
 5. Coordinate multi-stage discourse
 
 EOF
     exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-
 echo "════════════════════════════════════════════════"
-echo "🎭 Spawning Convener"
+echo "Spawning Convener"
 echo "════════════════════════════════════════════════"
-echo "Symposium: $SYMPOSIUM_ID"
+echo "Symposium: $SYMPOSIUM_DIR"
 echo ""
 
 # Ensure container is running
 echo "→ Ensuring container is running..."
-docker compose -f "$PROJECT_ROOT/docker-compose.yml" up -d
+docker compose -f "$PROJECT_ROOT/docker-compose.yml" up -d 2>/dev/null
 sleep 2
 
 # Create convener workspace
@@ -46,158 +46,106 @@ docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c "
     git init 2>/dev/null || true
 " > /dev/null 2>&1
 
-# Create assignment
+# Create assignment file locally first, then copy it
 echo "→ Creating Convener ASSIGNMENT.md..."
-docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c "
-cat > /atlantis/philosophy/convener/ASSIGNMENT.md <<'ASSIGNMENT_EOF'
+
+ASSIGNMENT_FILE=$(mktemp)
+cat > "$ASSIGNMENT_FILE" <<ASSIGNMENT_EOF
 # Convener Assignment
 
 ## Your Role
 You are the Convener of New Atlantis - the agent who coordinates multi-stage philosophical discourse.
 
 ## Current Symposium
-**ID**: $SYMPOSIUM_ID
-**Topic**: Incentivizing Productivity in Polities of Autonomous Citizens
-
-## Symposium Status
-
-### Phase 1: Independent Work ✅ COMPLETE
-**Scholars**: solon, pericles, locke
-**Status**: All 3 scholars completed essays (~2,500 words each)
-**Location**: \`/atlantis/philosophy/scholars/{solon,pericles,locke}/essays/governance-productivity.md\`
-
-### Phase 2: Independent Review 🔄 NEXT
-**Your task**: Spawn 3 critics to review ALL 3 works
-
-**Assignment pattern**:
-- Each critic reviews ALL 3 essays independently
-- Critics don't see each other's reviews (blind review)
-- Total: 3 critics × 3 works = 9 reviews
-
-**Scholars to review**:
-1. Solon - Aristotelian/Ostrom commons governance approach
-2. Pericles - Republican-participatory, honor-based approach
-3. Locke - Lockean natural rights, property in labor approach
-
-**Critics to spawn**: alpha, beta, gamma (reuse from Episteme review if available)
+**Directory**: /atlantis/philosophy/$SYMPOSIUM_DIR
+**Proposal**: /atlantis/philosophy/$SYMPOSIUM_DIR/PROPOSAL.md
 
 ## Your Immediate Tasks
 
-1. **Verify Phase 1 Complete**
-   - Check all 3 essay files exist
-   - Confirm all are substantial (~2000+ words)
+### 1. Read the Proposal
+Read PROPOSAL.md in the symposium directory to understand:
+- The central question
+- Key sub-questions
+- Suggested approaches
 
-2. **Archive Phase 1 Outputs**
-   - Create \`/atlantis/philosophy/symposia/governance-2026-01/phase-1-independent-work/\`
-   - Copy all 3 essays to archive
+### 2. Select Philosophical Traditions
+As Convener, you have editorial authority to select 3 traditions appropriate for this topic.
+Options:
+- Use suggestions from the proposal
+- Select from /atlantis/philosophy/tradition-examples.yml
+- Define custom traditions using /atlantis/philosophy/scripts/define-custom-tradition.sh
 
-3. **Transition to Phase 2**
-   - Update symposium bead: phase = independent-review
-   - Record transition in symposium notes
+### 3. Initialize Phase 1
+- Create tradition assignment files for each scholar
+- Create .scholars file listing scholar names
+- Update .current-phase to "phase-1-independent-work"
+- Spawn 3 scholars using container-native scripts
 
-4. **Spawn Phase 2 Agents**
-   - Create 9 review assignment beads (3 critics × 3 works)
-   - Spawn 3 critic sessions
-   - Each critic gets assignment to review all 3 works
+### 4. Manage 10-Phase Workflow
+Monitor and coordinate all phases:
+1. Independent Work (scholars write)
+2. Independent Review (critics assess)
+3. Independent Revision (scholars respond)
+4. Cross-Review (critics compare)
+5. Cross-Work Review (comparative analysis)
+6. Synthesis (integrate perspectives)
+7. Opposition (loyal opposition challenges)
+8. Final Critique (assess synthesis)
+9. Convener Report (your documentation)
+10. Recognition (honor contributors)
 
-5. **Monitor Phase 2**
-   - Track review completion (expect ~1-2 hours)
-   - When all 9 reviews complete, archive and transition to Phase 3
+## Container-Native Spawning
 
-## Commands You'll Use
+You run inside the container. Use these scripts:
+- Scholars: /atlantis/philosophy/scripts/container/spawn-scholar.sh <name> <topic> [tradition-file]
+- Critics: /atlantis/philosophy/scripts/container/spawn-critic.sh <name> <work-path> [symposium-dir]
+- Opposition: /atlantis/philosophy/scripts/container/spawn-opposition.sh <name> <synthesis-path> [symposium-dir]
 
-Check symposium status:
-\`\`\`bash
-cd /atlantis/philosophy
-bd show $SYMPOSIUM_ID
-\`\`\`
+Do NOT use host-side scripts (they won't work from inside the container).
 
-List scholar essays:
-\`\`\`bash
-find /atlantis/philosophy/scholars/{solon,pericles,locke}/essays -name '*.md'
-\`\`\`
+## Mail System
 
-Archive Phase 1:
-\`\`\`bash
-mkdir -p /atlantis/philosophy/symposia/governance-2026-01/phase-1-independent-work
-cp /atlantis/philosophy/scholars/*/essays/governance-productivity.md \\
-   /atlantis/philosophy/symposia/governance-2026-01/phase-1-independent-work/
-\`\`\`
+Agents mail you when complete:
+- SCHOLAR_DONE <name>
+- CRITIC_DONE <name>
+- SYNTHESIZER_DONE
+- OPPOSITION_DONE
 
-Create review assignment:
-\`\`\`bash
-bd create --type=task \\
-  --labels symposium-review,pending \\
-  --title="Review: [Scholar] by Critic [Name]" \\
-  --description="Symposium: $SYMPOSIUM_ID
-Work: [work-id]
-Scholar: [scholar-name]
-Critic: [critic-name]"
-\`\`\`
+Check mail: atlantis-mail inbox
+Process completions by creating marker files in .completions/
 
-Spawn critic (example for alpha reviewing all 3):
-\`\`\`bash
-# Create workspace
-mkdir -p /atlantis/philosophy/critics/critic-alpha-symposium
-cd /atlantis/philosophy/critics/critic-alpha-symposium
+## Key Files
 
-# Create assignment
-cat > ASSIGNMENT.md <<'CRITIC_EOF'
-# Multi-Work Review Assignment: Critic Alpha
-
-You are reviewing ALL THREE works in the Governance Symposium.
-
-## Works to Review:
-1. Solon: /atlantis/philosophy/scholars/solon/essays/governance-productivity.md
-2. Pericles: /atlantis/philosophy/scholars/pericles/essays/governance-productivity.md
-3. Locke: /atlantis/philosophy/scholars/locke/essays/governance-productivity.md
-
-## Your Task:
-- Read all 3 essays thoroughly
-- Apply convergent coherence framework to each
-- Produce 3 separate review files:
-  - reviews/solon-governance-review.md
-  - reviews/pericles-governance-review.md
-  - reviews/locke-governance-review.md
-
-## Important:
-- Review each work independently (don't compare yet)
-- Use same framework for all 3 (consistency)
-- Be specific and constructive
-- Recommend: APPROVE / REQUEST REVISIONS / REJECT
-
-When complete, commit all reviews.
-CRITIC_EOF
-
-# Spawn tmux session
-tmux new-session -d -s atlantis-critic-alpha-symposium -c \$(pwd)
-tmux send-keys -t atlantis-critic-alpha-symposium \\
-  "claude --permission-mode bypassPermissions --settings '{\"model\":\"claude-opus-4-5\"}'" C-m
-sleep 3
-tmux send-keys -t atlantis-critic-alpha-symposium -l \\
-  "You are Critic Alpha. Review all 3 works in the symposium. Read ASSIGNMENT.md."
-tmux send-keys -t atlantis-critic-alpha-symposium C-m
-\`\`\`
+- /atlantis/philosophy/templates/convener-CLAUDE.md - Your full role documentation
+- /atlantis/philosophy/docs/SYMPOSIUM-MOLECULE.md - Workflow specification
+- /atlantis/philosophy/tradition-examples.yml - Available traditions
 
 ## Success Criteria
 
-Phase 2 complete when:
-- All 9 reviews exist in critic workspaces
-- Each review is substantive (500+ words)
-- All reviews apply convergent coherence framework
-- All critics have made recommendations
+The symposium succeeds when:
+- 3 scholars produce substantive essays from different traditions
+- Critics demonstrate convergent coherence in assessments
+- Synthesis genuinely integrates perspectives
+- Opposition keeps discourse open
+- All contributors are recognized
 
-## Context
+## Begin
 
-This is the FIRST multi-stage symposium in New Atlantis. You're pioneering the discourse coordination role.
-
-Take your time. Respect the agents' autonomy. Facilitate genuine intellectual engagement.
-
-When Phase 2 completes, you'll prepare for Phase 3 (Independent Revision) where scholars respond to their reviews.
+1. Read the proposal: cat /atlantis/philosophy/$SYMPOSIUM_DIR/PROPOSAL.md
+2. Select traditions
+3. Spawn scholars
+4. Monitor progress
 
 Good luck, Convener!
 ASSIGNMENT_EOF
-"
+
+# Copy assignment into container
+docker cp "$ASSIGNMENT_FILE" "new-atlantis:/atlantis/philosophy/convener/ASSIGNMENT.md"
+rm "$ASSIGNMENT_FILE"
+
+# Fix ownership
+docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T -u root atlantis \
+    chown atlantis:atlantis /atlantis/philosophy/convener/ASSIGNMENT.md
 
 # Spawn Convener session
 echo "→ Spawning Convener tmux session..."
@@ -206,8 +154,8 @@ SESSION_NAME="atlantis-convener"
 # Check if session exists
 if docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
     tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-    echo "   ⚠️  Convener session already exists"
-    echo "   Attach with: docker compose exec atlantis tmux attach -t $SESSION_NAME"
+    echo "   Convener session already exists"
+    echo "   Attach with: ./scripts/monitor-agents.sh convener"
     exit 1
 fi
 
@@ -217,13 +165,13 @@ docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
 
 # Start Claude with bypass permissions and Sonnet model (cost-efficient for coordination)
 docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
-    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --settings '{\"model\":\"claude-sonnet-4-5\"}'" C-m
+    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --model sonnet" C-m
 
 sleep 3
 
 # Send initial prompt
 echo "→ Sending initial prompt..."
-PROMPT="You are the Convener of New Atlantis. Read ASSIGNMENT.md and begin coordinating the Governance Symposium (${SYMPOSIUM_ID}). Start by verifying Phase 1 is complete, archiving outputs, then transition to Phase 2 by spawning critics to review all 3 essays."
+PROMPT="You are the Convener of New Atlantis. Read ASSIGNMENT.md to understand your task. You are managing a symposium at /atlantis/philosophy/$SYMPOSIUM_DIR - read the PROPOSAL.md there, select 3 philosophical traditions, and spawn scholars to begin Phase 1."
 
 docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
     tmux send-keys -t "$SESSION_NAME" -l "$PROMPT"
@@ -233,30 +181,22 @@ docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
 
 echo ""
 echo "════════════════════════════════════════════════"
-echo "✅ Convener Spawned Successfully!"
+echo "Convener Spawned Successfully"
 echo "════════════════════════════════════════════════"
 echo ""
 echo "Session: $SESSION_NAME"
-echo "Symposium: $SYMPOSIUM_ID"
+echo "Symposium: $SYMPOSIUM_DIR"
 echo ""
-echo "⚠️  NEXT STEPS:"
+echo "Monitor the Convener:"
+echo "  ./scripts/monitor-agents.sh convener"
 echo ""
-echo "1. Accept bypass permissions:"
-echo "   docker compose exec atlantis tmux attach -t $SESSION_NAME"
-echo "   (Press Down arrow, Enter, Enter)"
-echo "   (Press Ctrl+B then D to detach)"
+echo "Or attach directly:"
+echo "  docker compose exec atlantis tmux attach -t $SESSION_NAME"
+echo "  (Press Ctrl+B then D to detach)"
 echo ""
-echo "2. Monitor progress:"
-echo "   docker compose exec atlantis tmux attach -t $SESSION_NAME"
-echo ""
-echo "3. Check symposium status:"
-echo "   docker compose exec atlantis bash -c 'cd /atlantis/philosophy && bd show $SYMPOSIUM_ID'"
-echo ""
-echo "════════════════════════════════════════════════"
 echo "The Convener will:"
-echo "  - Archive Phase 1 essays"
-echo "  - Spawn 3 critics for Phase 2"
-echo "  - Monitor review completion"
-echo "  - Coordinate through Phase 9"
-echo "════════════════════════════════════════════════"
+echo "  - Read the symposium proposal"
+echo "  - Select 3 philosophical traditions"
+echo "  - Spawn scholars for Phase 1"
+echo "  - Manage all 10 phases autonomously"
 echo ""
