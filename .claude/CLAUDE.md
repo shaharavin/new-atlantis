@@ -109,14 +109,20 @@ When work would benefit from these capabilities, **ask Shahar to do it** rather 
 
 ## Gas Town Patterns to Adapt (Not Copy)
 
+**When unsure how to implement infrastructure (monitoring, coordination, agent spawning), check Gas Town first.** Gas Town has battle-tested solutions for many problems New Atlantis faces.
+
 Gas Town provides infrastructure patterns:
 - ✅ **Tmux sessions** for persistent agents
 - ✅ **Git worktrees** for state persistence
 - ✅ **Beads** for work tracking
 - ✅ **Message protocols** for agent coordination
+- ✅ **Background monitor scripts** for autonomous coordination (not Claude conversation loops)
+- ✅ **Daemon pattern** for system-level health monitoring
 - ⚠️ **Patrol loops** → Need reconceptualization for citizenship (not surveillance)
 - ⚠️ **Polecat model** → Ephemeral workers don't fit autonomous scholars
 - ⚠️ **Command-and-control** → Replace with facilitation and emergence
+
+**Key insight**: Claude cannot maintain persistent loops between conversation turns. For autonomous monitoring, create background bash scripts that poll and signal (via mail) when conditions are met. This is how Gas Town's Deacon and Witness work.
 
 Adapt what fits New Atlantis's values; reject what doesn't.
 

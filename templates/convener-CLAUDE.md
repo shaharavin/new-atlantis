@@ -88,6 +88,89 @@ Each cycle: check if current phase is complete, transition if ready, spawn new a
 
 ---
 
+## CRITICAL: Background Monitor Scripts
+
+**Claude cannot maintain persistent loops between conversation turns.** To autonomously monitor phase completion, you MUST create and run background bash scripts.
+
+### Pattern: Create a Monitor Script for Each Phase
+
+After spawning agents for a new phase, create a monitoring script:
+
+```bash
+#!/bin/bash
+# monitor-phase-N.sh - Background monitor for Phase N
+
+SYMPOSIUM_DIR="/atlantis/philosophy/first-works/symposium-NAME"
+EXPECTED_AGENTS="agent1 agent2 agent3"  # From .scholars or .critics file
+LOG_FILE="/atlantis/philosophy/convener/phase-N-monitor.log"
+PHASE_DIR="$SYMPOSIUM_DIR/phase-N-description"
+
+echo "$(date -Iseconds) - Phase N monitoring started" >> "$LOG_FILE"
+
+while true; do
+    # Count completed agents
+    COMPLETE=0
+    TOTAL=0
+
+    for AGENT in $EXPECTED_AGENTS; do
+        TOTAL=$((TOTAL + 1))
+        if [ -f "$SYMPOSIUM_DIR/.completions/scholar-$AGENT.done" ] || \
+           [ -f "$SYMPOSIUM_DIR/.completions/critic-$AGENT.done" ]; then
+            COMPLETE=$((COMPLETE + 1))
+        fi
+    done
+
+    echo "$(date -Iseconds) - Complete: $COMPLETE/$TOTAL" >> "$LOG_FILE"
+
+    if [ "$COMPLETE" -ge "$TOTAL" ]; then
+        echo "$(date -Iseconds) - PHASE COMPLETE!" >> "$LOG_FILE"
+
+        # Archive outputs (copy files to phase directory)
+        # ... archiving logic ...
+
+        # Signal yourself to wake up
+        export ATLANTIS_AGENT_NAME=monitor
+        atlantis-mail send convener "PHASE_COMPLETE N" "All agents finished phase N"
+
+        exit 0
+    fi
+
+    # Check every 30 seconds
+    sleep 30
+done
+```
+
+### Running the Monitor
+
+After creating the script, run it in the background:
+
+```bash
+chmod +x monitor-phase-N.sh
+nohup ./monitor-phase-N.sh > /dev/null 2>&1 &
+echo $! > monitor-phase-N.pid
+echo "Monitor started with PID $(cat monitor-phase-N.pid)"
+```
+
+### Why This Works
+
+1. **Background process**: Script runs independently of Claude conversation
+2. **File-based completion**: Checks `.completions/` directory (populated when you process mail)
+3. **Mail notification**: When complete, mails you to wake up
+4. **Logs**: Track progress in log file for debugging
+
+### Your Workflow Per Phase
+
+1. Spawn agents for the phase
+2. Create `.scholars` or `.critics` file listing expected agents
+3. Create and run `monitor-phase-N.sh` in background
+4. Process incoming mail (creates `.completions/` markers)
+5. Monitor script detects completion, mails you
+6. You wake up, transition to next phase, repeat
+
+**This is how Gas Town handles autonomous coordination** - background scripts that poll and signal, not Claude loops.
+
+---
+
 ## Symposium Metadata Files
 
 Each symposium directory uses metadata files for tracking:
@@ -423,12 +506,24 @@ transition_phase() {
 
 ## Step 6: Spawn Agents for New Phase
 
-**IMPORTANT: Container-Native Spawning**
+**CRITICAL: Use Container-Native Spawn Scripts**
 
-You run inside the container, so use container-native scripts that create proper tmux sessions:
+You run inside the container. **ALWAYS use the spawn scripts** - do NOT write your own tmux commands:
 - Scholars: `/atlantis/philosophy/scripts/container/spawn-scholar.sh`
 - Critics: `/atlantis/philosophy/scripts/container/spawn-critic.sh`
 - Opposition: `/atlantis/philosophy/scripts/container/spawn-opposition.sh`
+
+**Why**: The scripts handle the tricky tmux send-keys + Enter sequence correctly. If you write your own tmux commands, agents will hang waiting for Enter and require human intervention.
+
+If you MUST spawn manually (e.g., for synthesis), follow this exact pattern:
+```bash
+tmux new-session -d -s "$SESSION" -c "$WORKSPACE"
+tmux send-keys -t "$SESSION" "claude --permission-mode bypassPermissions --model opus" C-m
+sleep 5  # Wait for Claude to initialize
+tmux send-keys -t "$SESSION" -l "$PROMPT"
+sleep 1  # CRITICAL: Wait before sending Enter
+tmux send-keys -t "$SESSION" Enter  # Use 'Enter' not 'C-m'
+```
 
 Do NOT use host-side scripts (they use `docker compose exec` which won't work from inside).
 
@@ -500,12 +595,13 @@ Produce: Synthetic framework that genuinely integrates perspectives, resolves te
 EOF
 
       tmux new-session -d -s "$SESSION" -c "/atlantis/philosophy/scholars/$SYNTHESIS_SCHOLAR"
-      tmux send-keys -t "$SESSION" "claude --permission-mode bypassPermissions --settings '{\"model\":\"claude-opus-4-5\"}'" C-m
-      sleep 3
+      tmux send-keys -t "$SESSION" "claude --permission-mode bypassPermissions --model opus" C-m
+      sleep 5  # Wait for Claude to initialize
 
       PROMPT="You are Scholar $SYNTHESIS_SCHOLAR. Read your ASSIGNMENT and create a synthetic framework integrating all prior work in the symposium."
       tmux send-keys -t "$SESSION" -l "$PROMPT"
-      tmux send-keys -t "$SESSION" C-m
+      sleep 1  # CRITICAL: Wait before sending Enter
+      tmux send-keys -t "$SESSION" Enter  # Use 'Enter' not 'C-m'
 
       echo "✅ Synthesis scholar spawned"
       ;;

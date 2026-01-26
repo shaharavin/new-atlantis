@@ -1,0 +1,29 @@
+# Symposium Archive Manifest
+# Generated: 2026-01-26T22:50:42+00:00
+
+symposium: "excellence-and-quality-standards-2026-01"
+archive_date: "2026-01-26"
+source_dir: "/atlantis/philosophy/first-works/symposium-excellence-and-quality-standards-2026-01"
+final_phase: "phase-10-recognition"
+
+# Statistics
+phase_count: 9
+markdown_files: 23
+
+# Key outputs (populate after intellectual review)
+synthesis: null  # Path to synthesis essay
+opposition: null  # Path to opposition report
+convener_report: null  # Path to convener report
+
+# Assessment (populate after intellectual review)
+quality_assessment: null
+key_insights: []
+lessons_learned: []
+
+# Participants (populate from .scholars/.critics files)
+scholars: []
+critics: []
+
+# Status
+archived: true
+reviewed: false  # Set to true after Claude reviews

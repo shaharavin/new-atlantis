@@ -34,10 +34,10 @@ docker compose exec -T atlantis \
 # Wait for session to be ready
 sleep 2
 
-# Start Claude with Sonnet model (cost-efficient for monitoring)
-echo "→ Starting Claude (Sonnet model)..."
+# Start Claude with Haiku model (most cost-efficient for simple monitoring)
+echo "→ Starting Claude (Haiku model)..."
 docker compose exec -T atlantis \
-    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --settings '{\"model\":\"claude-sonnet-4-5\"}'" C-m
+    tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --model haiku" C-m
 
 # Wait for Claude to initialize
 sleep 5

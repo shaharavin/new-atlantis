@@ -1,7 +1,7 @@
 # Next Steps for New Atlantis
 
 **Last Updated**: January 26, 2026
-**Status**: Symposium #2 complete! Implementing governance recommendations before Symposium #3.
+**Status**: Symposium #3 running. Skills created. Convener mailbox bug identified.
 
 ---
 
@@ -45,14 +45,49 @@
 
 **Archive**: `first-works/symposium-constitutional-foundations-2026-01/`
 
-### Infrastructure Issue Discovered
+### Infrastructure Issues
 
-During Symposium #2, scholars were spawned as native processes (not tmux sessions), making them invisible to monitoring tools. Root cause: Convener ran host-side scripts from inside container.
+**Issue 1 (FIXED)**: During Symposium #2, scholars were spawned as native processes (not tmux sessions), making them invisible to monitoring tools.
 
 **Solution**: Container-native spawn scripts that create proper tmux sessions.
-- ✅ `scripts/container/spawn-scholar.sh` exists
-- ❌ `scripts/container/spawn-critic.sh` needed
-- ❌ Convener template needs update to use container scripts
+- ✅ `scripts/container/spawn-scholar.sh`
+- ✅ `scripts/container/spawn-critic.sh`
+- ✅ `scripts/container/spawn-opposition.sh`
+- ✅ Convener template updated
+
+**Issue 2 (FIXED)**: Convener not autonomously progressing through phases.
+
+**Root cause identified**: The previous Convener (Symposium #1 & #2) created **background bash monitoring scripts** that poll independently of Claude's conversation. These scripts run `while true` loops with `sleep 30`, checking for completion conditions and mailing the Convener when phases complete. The current Convener wasn't creating these scripts.
+
+**Solution**: Updated Convener template and `/convener-role` skill to document the background monitor script pattern. Convener must:
+1. Spawn agents for a phase
+2. Create a `monitor-phase-N.sh` script
+3. Run it in background with `nohup ./monitor-phase-N.sh &`
+4. Script polls `.completions/` directory and mails when all agents done
+5. Mail wakes Convener to transition to next phase
+
+**Key insight**: Claude cannot maintain persistent loops between conversation turns. For autonomous coordination, use background bash scripts that poll and signal. This is how Gas Town works too.
+
+**Files updated**:
+- `templates/convener-CLAUDE.md` - Added "CRITICAL: Background Monitor Scripts" section
+- `.claude/skills/convener-role/SKILL.md` - Added monitor script pattern
+- `.claude/CLAUDE.md` - Added Gas Town consultation guidance
+
+**Issue 3 (FIXED)**: Agents spawned by Convener hang waiting for newline.
+
+**Root cause identified**: The Convener wasn't using the container spawn scripts. It was writing its own tmux commands and either:
+1. Using `C-m` instead of `Enter` (less reliable)
+2. Not including a `sleep 1` before sending Enter
+3. Forgetting to send Enter entirely
+
+**Solution**: Updated Convener template and skill with:
+1. Strong warning: "ALWAYS use the spawn scripts - do NOT write your own tmux commands"
+2. If manual spawning needed, use exact pattern: `sleep 1` then `tmux send-keys Enter`
+3. Fixed synthesis section example to use correct pattern
+
+**Files updated**:
+- `templates/convener-CLAUDE.md` - Added warning, fixed synthesis example
+- `.claude/skills/convener-role/SKILL.md` - Added manual spawn pattern
 
 ---
 
@@ -188,20 +223,20 @@ New Atlantis forked from Gas Town but hasn't synced with recent developments. Wo
 
 **Action**: Review Gas Town's recent commits and docs, adapt useful patterns.
 
-### Claude Skills (Priority: Medium-High)
+### Claude Skills (Priority: Medium-High) ✅ IMPLEMENTED
 
-We're not currently using Claude Skills, but they could significantly help with:
-- **Context efficiency**: Reusable capability packages avoid re-explaining patterns
-- **Institutional memory**: Skills accumulate learnings across agent generations
-- **Cost reduction**: Less repetition in prompts
+Skills created in `.claude/skills/`:
+- ✅ `/scholar-role` - Scholar workflow and conventions
+- ✅ `/critic-role` - Critic role with convergent coherence framework
+- ✅ `/convener-role` - Symposium management workflow
+- `/handoff` - Session cycling (from Gas Town)
 
-**Potential skills to create**:
-- `new-atlantis-scholar`: Scholar role context and workflow
-- `new-atlantis-critic`: Critic role with convergent coherence framework
-- `new-atlantis-convener`: Symposium management workflow
-- `symposium-activate`: Activate symposium from queue
+**How skills work**: Descriptions load at session start; full content loads on-demand when Claude decides they're relevant (or when manually invoked with `/skill-name`). More context-efficient than putting everything in CLAUDE.md.
 
-**Action**: Investigate Skills system, prototype one skill, assess value.
+**Next steps**:
+- Test skills with agents in Symposium #3
+- Consider `/opposition-role` skill
+- Consider dynamic skills with `!command` syntax for live data
 
 ### Seth Lazar's Coding Agents for Research (Priority: High)
 
@@ -284,5 +319,5 @@ This is the beginning of self-governance: **the community's outputs shaping the 
 
 **For continuity**: The Founder
 **Session**: 2026-01-26
-**Status**: Planning complete, implementation beginning
-**Next**: Container scripts → Opposition Phase → Symposium #3
+**Status**: Symposium #3 running (scholars working), Skills implemented
+**Next**: Fix Convener mailbox bug → Complete Symposium #3 → Evaluate skills in practice
