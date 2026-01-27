@@ -17,10 +17,10 @@
 .DS_Store
 Thumbs.db
 
-# Claude Code local state (but track skills and CLAUDE.md)
-.claude/*
-!.claude/CLAUDE.md
-!.claude/skills/
+# Claude Code local state
+# Track CLAUDE.md and skills/ (project-level)
+# Ignore settings.local.json (user-specific permissions)
+.claude/settings.local.json
 
 # Test
 coverage.out
