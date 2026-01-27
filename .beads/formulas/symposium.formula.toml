@@ -1,0 +1,216 @@
+# Symposium Molecule Formula
+#
+# A multi-phase philosophical discourse workflow for New Atlantis.
+# Adapted from Gas Town convoy patterns for scholarly work.
+#
+# Usage:
+#   bd cook symposium
+#   bd mol pour symposium --var topic="Excellence and Quality Standards"
+
+description = """
+Symposium Molecule: 10-phase philosophical discourse workflow.
+
+Coordinates scholars, critics, and synthesizers through structured
+intellectual discourse from independent work through synthesis.
+
+## Phases
+1. **independent-work**: Scholars write essays independently
+2. **independent-review**: Critics assess all works
+3. **independent-revision**: Scholars respond to reviews
+4. **cross-review**: Critics compare their assessments
+5. **cross-work-review**: Comparative analysis across works
+6. **synthesis**: New scholar integrates perspectives
+7. **opposition**: Loyal dissent challenges synthesis
+8. **final-critique**: Critics assess synthesis
+9. **convener-report**: Operational documentation
+10. **recognition**: Honor all contributors
+
+## Philosophy
+- Quality over velocity (deep work takes time)
+- Facilitation over command
+- Beads track work; discourse emerges organically
+"""
+formula = "symposium"
+type = "molecule"
+version = 1
+
+[inputs]
+[inputs.topic]
+description = "Symposium topic or question"
+type = "string"
+required = true
+
+[inputs.scholars]
+description = "Comma-separated list of scholar names"
+type = "string"
+default = "scholar-1,scholar-2,scholar-3"
+
+[inputs.critics]
+description = "Comma-separated list of critic names"
+type = "string"
+default = "critic-1,critic-2,critic-3"
+
+# Step definitions using Gas Town molecule format
+# Each step becomes a child bead when molecule is poured
+
+[[steps]]
+ref = "phase-1-independent-work"
+title = "Phase 1: Independent Work"
+tier = "opus"
+description = """
+Scholars write essays independently on the symposium topic.
+
+**Actors**: {{.scholars}}
+**Output**: Essays in phase-1-independent-work/
+
+Use spawn-scholar.sh for each scholar with the symposium bead ID.
+Phase complete when all scholar beads are closed.
+"""
+
+[[steps]]
+ref = "phase-2-independent-review"
+title = "Phase 2: Independent Review"
+needs = ["phase-1-independent-work"]
+tier = "opus"
+description = """
+Critics review all works from Phase 1.
+
+**Actors**: {{.critics}}
+**Input**: Essays from phase-1-independent-work/
+**Output**: Reviews in phase-2-independent-review/
+
+Each critic reviews ALL essays. Use spawn-critic.sh with symposium bead ID.
+Phase complete when all critic beads are closed.
+"""
+
+[[steps]]
+ref = "phase-3-independent-revision"
+title = "Phase 3: Independent Revision"
+needs = ["phase-2-independent-review"]
+tier = "opus"
+description = """
+Scholars revise based on reviews.
+
+**Actors**: {{.scholars}}
+**Input**: Reviews of their own work
+**Output**: Revised essays in phase-3-independent-revision/
+
+Each scholar receives their reviews and produces revised essay.
+Phase complete when all revision beads are closed.
+"""
+
+[[steps]]
+ref = "phase-4-cross-review"
+title = "Phase 4: Cross-Review"
+needs = ["phase-3-independent-revision"]
+tier = "opus"
+description = """
+Critics compare their assessments.
+
+**Actors**: {{.critics}} (as editorial board)
+**Input**: All reviews + revised works
+**Output**: Editorial report in phase-4-cross-review/
+
+Critics discuss where they converged/diverged in assessments.
+Single bead for this phase (editorial board).
+"""
+
+[[steps]]
+ref = "phase-5-cross-work-review"
+title = "Phase 5: Cross-Work Review"
+needs = ["phase-4-cross-review"]
+tier = "opus"
+description = """
+Comparative analysis across all works.
+
+**Actors**: Designated critic
+**Input**: All revised works
+**Output**: Cross-work analysis in phase-5-cross-work-review/
+
+Identify points of agreement, disagreement, and synthesis opportunities.
+Single bead for this phase.
+"""
+
+[[steps]]
+ref = "phase-6-synthesis"
+title = "Phase 6: Synthesis"
+needs = ["phase-5-cross-work-review"]
+tier = "opus"
+description = """
+New scholar integrates perspectives.
+
+**Actors**: Synthesis scholar (e.g., omega)
+**Input**: All works + cross-work analysis
+**Output**: Integrated essay in phase-6-synthesis/
+
+Create unified framework stronger than any single approach.
+Single bead for this phase.
+"""
+
+[[steps]]
+ref = "phase-7-opposition"
+title = "Phase 7: Opposition"
+needs = ["phase-6-synthesis"]
+tier = "opus"
+description = """
+Loyal opposition challenges synthesis.
+
+**Actors**: Opposition critic
+**Input**: Synthesis + all prior work
+**Output**: Opposition report in phase-7-opposition/
+
+Challenge conclusions, represent foreclosed perspectives.
+Use spawn-opposition.sh with symposium bead ID.
+Single bead for this phase.
+"""
+
+[[steps]]
+ref = "phase-8-final-critique"
+title = "Phase 8: Final Critique"
+needs = ["phase-7-opposition"]
+tier = "opus"
+description = """
+Critics assess synthesis in light of opposition.
+
+**Actors**: {{.critics}}
+**Input**: Synthesis + opposition report
+**Output**: Final reviews in phase-8-final-critique/
+
+Assess whether synthesis genuinely integrates perspectives.
+One bead per critic reviewing.
+"""
+
+[[steps]]
+ref = "phase-9-convener-report"
+title = "Phase 9: Convener Report"
+needs = ["phase-8-final-critique"]
+tier = "sonnet"
+description = """
+Convener documents the symposium.
+
+**Actors**: Convener
+**Input**: All symposium outputs
+**Output**: Operational report in phase-9-convener-report/
+
+Document workflow, timeline, costs, process improvements.
+Single bead for this phase.
+"""
+
+[[steps]]
+ref = "phase-10-recognition"
+title = "Phase 10: Recognition"
+needs = ["phase-9-convener-report"]
+tier = "sonnet"
+description = """
+Honor all contributors.
+
+**Actors**: Convener
+**Input**: All symposium outputs
+**Output**: Recognition artifacts in phase-10-recognition/
+
+- CONTRIBUTORS.md: Honor roll
+- METRICS.md: Quantitative summary
+- recognition-report.md: Narrative appreciation
+
+Close symposium bead after this phase.
+"""

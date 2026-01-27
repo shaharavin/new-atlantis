@@ -103,22 +103,38 @@ You run inside the container. Use these scripts:
 
 Do NOT use host-side scripts (they won't work from inside the container).
 
-## Mail System
+## Completion Tracking
 
-Agents mail you when complete:
+Agents signal completion by closing their beads (\`bd close\`).
+Check status: \`bd show \$SYMPOSIUM_BEAD\` (children show ✓ when closed)
+
+Mail is a backup signal:
 - SCHOLAR_DONE <name>
 - CRITIC_DONE <name>
 - SYNTHESIZER_DONE
 - OPPOSITION_DONE
 
-Check mail: atlantis-mail inbox
-Process completions by creating marker files in .completions/
+Check mail: \`atlantis-mail inbox\`
 
-## Key Files
+## Key Resources
 
-- /atlantis/philosophy/templates/convener-CLAUDE.md - Your full role documentation
+- Run \`/convener-role\` to load Convener guidance (beads-native)
 - /atlantis/philosophy/docs/SYMPOSIUM-MOLECULE.md - Workflow specification
 - /atlantis/philosophy/tradition-examples.yml - Available traditions
+
+## Beads Integration
+
+Create a symposium parent bead, then pass it to spawn scripts:
+\`\`\`bash
+cd /atlantis/philosophy
+SYMPOSIUM_BEAD=\$(bd create --title "Symposium: Topic" --label symposium | grep -oE 'ph-[a-z0-9.]+' | head -1)
+
+# Spawn with bead linking
+/atlantis/philosophy/scripts/container/spawn-scholar.sh name topic "" \$SYMPOSIUM_BEAD
+
+# Check progress
+bd show \$SYMPOSIUM_BEAD  # Shows children with status
+\`\`\`
 
 ## Success Criteria
 
