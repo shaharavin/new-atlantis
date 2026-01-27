@@ -154,26 +154,37 @@ Tasks:
 - [x] Remove background monitor script instructions (beads persist state)
 - [x] Simplify patrol cycle to just query beads
 - [x] Clarify `bd show SYMPOSIUM_BEAD` as best completion check method
-- [ ] Update main `templates/convener-CLAUDE.md` to match skill (or deprecate)
+- [x] Slim `templates/convener-CLAUDE.md` to 5-line redirect
 - [ ] Test with a real symposium (next symposium will be first beads-native)
 
-**Notes**: The `/convener-role` skill is now beads-native. The old 1030-line template should either be updated to match or deprecated in favor of the skill.
+**Notes**: Template now just says "run /convener-role" - no context waste.
 
 ### Phase 4: Evaluate Gas Town's `gt` CLI (Medium-term)
 
 **Goal**: Determine if we should use/adapt `gt` for New Atlantis
 
-Questions to answer:
-- Can we use `gt` directly, or do we need to fork/adapt?
-- Do Gas Town molecules fit our Symposium Molecule design?
-- What's the cost/benefit of `gt sling` vs. our spawn scripts?
-- Should we adopt hooks for agent work queues?
+**Status**: 🔄 PARTIAL PROGRESS (2026-01-27)
+
+**Findings**:
+- `bd mol` commands work without `gt` installed
+- Created working `.beads/formulas/symposium.formula.toml`
+- `bd --no-daemon mol pour symposium --dry-run` creates all 10 phase beads
+- `gt` would add: sling (work dispatch), hooks (agent queues), handoff
+
+**Quick wins achieved**:
+- [x] Symposium formula created and validated
+- [x] `bd cook`, `bd mol pour`, `bd mol current` available in container
+
+**Would need `gt` for**:
+- `gt sling` - work dispatch (we use spawn scripts instead)
+- `gt hook` - agent work queues (we use ASSIGNMENT.md)
+- `gt handoff` - session refresh with context
 
 Tasks:
-- [ ] Install `gt` and experiment with molecules
-- [ ] Map Symposium Molecule to `gt` molecule format
-- [ ] Prototype one symposium phase using `gt`
-- [ ] Decide: adopt `gt`, fork it, or stay with `bd` only
+- [x] Map Symposium Molecule to `bd` formula format
+- [x] Test `bd mol pour` - creates 11 beads (1 parent + 10 phases)
+- [ ] Install `gt` in container (requires Go, bigger change)
+- [ ] Decide: use spawn scripts + bd mol, or adopt full gt
 
 ### Phase 5: Full Gas Town Alignment (Long-term)
 
