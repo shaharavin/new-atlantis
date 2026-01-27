@@ -1,24 +1,28 @@
 #!/bin/bash
 # Container-native script to spawn a single critic
 # Run this FROM INSIDE the container (e.g., by Convener agent)
+#
+# Beads integration: Creates a review bead for tracking. Critic closes bead on completion.
 
 set -e
 
 CRITIC_NAME="$1"
 WORK_TO_REVIEW="$2"  # Path to the work being reviewed
 SYMPOSIUM_DIR="$3"   # Path to symposium directory for output
+SYMPOSIUM_BEAD="$4"  # Parent symposium bead ID (optional)
 
 if [ -z "$CRITIC_NAME" ] || [ -z "$WORK_TO_REVIEW" ]; then
     cat <<EOF
-Usage: spawn-critic.sh <critic-name> <work-path> [symposium-dir]
+Usage: spawn-critic.sh <critic-name> <work-path> [symposium-dir] [symposium-bead]
 
 Example:
-  spawn-critic.sh delta /atlantis/philosophy/first-works/symposium-xyz/phase-1/rawls-essay.md /atlantis/philosophy/first-works/symposium-xyz
+  spawn-critic.sh delta /path/to/essay.md /path/to/symposium ph-symp-01
 
 Arguments:
-  critic-name   - Name of the critic (e.g., delta, epsilon, zeta)
-  work-path     - Path to the essay/work being reviewed
-  symposium-dir - (Optional) Symposium directory for review output
+  critic-name    - Name of the critic (e.g., delta, epsilon, zeta)
+  work-path      - Path to the essay/work being reviewed
+  symposium-dir  - (Optional) Symposium directory for review output
+  symposium-bead - (Optional) Parent symposium bead ID for linking
 
 This script runs INSIDE the container. For host-side spawning, use ../spawn-critic.sh
 
@@ -57,6 +61,25 @@ echo "→ Creating workspace..."
 mkdir -p "$WORKSPACE/reviews"
 cd "$WORKSPACE"
 git init 2>/dev/null || true
+
+# Create review bead for this critic
+echo "→ Creating review bead..."
+cd /atlantis/philosophy
+BEAD_TITLE="Review: $WORK_BASENAME by Critic $CRITIC_NAME"
+if [ -n "$SYMPOSIUM_BEAD" ]; then
+    REVIEW_BEAD=$(bd create --title "$BEAD_TITLE" --label review --label "critic-$CRITIC_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+else
+    REVIEW_BEAD=$(bd create --title "$BEAD_TITLE" --label review --label "critic-$CRITIC_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+fi
+
+if [ -n "$REVIEW_BEAD" ]; then
+    echo "→ Created bead: $REVIEW_BEAD"
+    bd update "$REVIEW_BEAD" --status in_progress 2>/dev/null || true
+else
+    echo "⚠️  Could not create bead (continuing without bead tracking)"
+    REVIEW_BEAD="none"
+fi
+cd "$WORKSPACE"
 
 # Determine output directory
 if [ -n "$SYMPOSIUM_DIR" ]; then
@@ -124,18 +147,24 @@ Save your review to: $REVIEW_OUTPUT_DIR/$CRITIC_NAME-review-$WORK_BASENAME.md
 
 ## Completion
 
+**Your review bead**: REVIEW_BEAD_PLACEHOLDER
+
 When finished:
 1. Review your critique for rigor and fairness
 2. Commit your review:
    \`\`\`bash
    git add . && git commit -m "Review: $WORK_BASENAME by $CRITIC_NAME"
    \`\`\`
-3. Set your identity and mail the Convener:
+3. Close your review bead (this signals completion):
+   \`\`\`bash
+   cd /atlantis/philosophy && bd close REVIEW_BEAD_PLACEHOLDER
+   \`\`\`
+4. Mail the Convener (backup signal):
    \`\`\`bash
    export ATLANTIS_AGENT_NAME=$CRITIC_NAME
-   atlantis-mail send convener "CRITIC_DONE $CRITIC_NAME" "Completed review of $WORK_BASENAME"
+   atlantis-mail send convener "CRITIC_DONE $CRITIC_NAME" "Completed review of $WORK_BASENAME - bead REVIEW_BEAD_PLACEHOLDER closed"
    \`\`\`
-4. Exit Claude (type /exit or Ctrl+C)
+5. Exit Claude (type /exit or Ctrl+C)
 
 ## Standards
 
@@ -147,6 +176,9 @@ When finished:
 
 Work independently. Think critically. Write constructively.
 ASSIGNMENT_EOF
+
+# Replace bead placeholder
+sed -i "s/REVIEW_BEAD_PLACEHOLDER/$REVIEW_BEAD/g" "$WORKSPACE/ASSIGNMENT.md"
 
 # Create tmux session
 echo "→ Creating tmux session..."
@@ -173,9 +205,13 @@ echo "Session: $SESSION_NAME"
 echo "Workspace: $WORKSPACE"
 echo "Reviewing: $WORK_TO_REVIEW"
 echo "Output: $REVIEW_OUTPUT_DIR/$CRITIC_NAME-review-$WORK_BASENAME.md"
+echo "Review Bead: $REVIEW_BEAD"
 echo ""
 echo "Monitor with:"
 echo "  tmux attach -t $SESSION_NAME"
+echo ""
+echo "Check bead status:"
+echo "  cd /atlantis/philosophy && bd show $REVIEW_BEAD"
 echo ""
 echo "Detach with: Ctrl+B then D"
 echo ""

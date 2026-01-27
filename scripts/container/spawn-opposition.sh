@@ -1,24 +1,28 @@
 #!/bin/bash
 # Container-native script to spawn the Opposition Critic
 # Run this FROM INSIDE the container (e.g., by Convener agent)
+#
+# Beads integration: Creates an opposition bead for tracking. Closes on completion.
 
 set -e
 
 OPPOSITION_NAME="${1:-opposition}"
 SYNTHESIS_FILE="$2"  # Path to the synthesis being challenged
 SYMPOSIUM_DIR="$3"   # Path to symposium directory for output
+SYMPOSIUM_BEAD="$4"  # Parent symposium bead ID (optional)
 
 if [ -z "$SYNTHESIS_FILE" ]; then
     cat <<EOF
-Usage: spawn-opposition.sh [opposition-name] <synthesis-path> [symposium-dir]
+Usage: spawn-opposition.sh [opposition-name] <synthesis-path> [symposium-dir] [symposium-bead]
 
 Example:
-  spawn-opposition.sh opposition /atlantis/philosophy/first-works/symposium-xyz/phase-6-synthesis/integrated-synthesis.md /atlantis/philosophy/first-works/symposium-xyz
+  spawn-opposition.sh opposition /path/to/synthesis.md /path/to/symposium ph-symp-01
 
 Arguments:
   opposition-name - Name for this opposition critic (default: "opposition")
   synthesis-path  - Path to the synthesis document being challenged
   symposium-dir   - (Optional) Symposium directory for output
+  symposium-bead  - (Optional) Parent symposium bead ID for linking
 
 This script runs INSIDE the container. It spawns the Loyal Opposition role
 to challenge the synthesis - implementing Symposium #2's recommendation for
@@ -56,6 +60,25 @@ echo "Creating workspace..."
 mkdir -p "$WORKSPACE"
 cd "$WORKSPACE"
 git init 2>/dev/null || true
+
+# Create opposition bead
+echo "Creating opposition bead..."
+cd /atlantis/philosophy
+BEAD_TITLE="Opposition: Challenge to synthesis by $OPPOSITION_NAME"
+if [ -n "$SYMPOSIUM_BEAD" ]; then
+    OPPOSITION_BEAD=$(bd create --title "$BEAD_TITLE" --label opposition --label "critic-$OPPOSITION_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+else
+    OPPOSITION_BEAD=$(bd create --title "$BEAD_TITLE" --label opposition --label "critic-$OPPOSITION_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+fi
+
+if [ -n "$OPPOSITION_BEAD" ]; then
+    echo "Created bead: $OPPOSITION_BEAD"
+    bd update "$OPPOSITION_BEAD" --status in_progress 2>/dev/null || true
+else
+    echo "Could not create bead (continuing without bead tracking)"
+    OPPOSITION_BEAD="none"
+fi
+cd "$WORKSPACE"
 
 # Determine output directory
 if [ -n "$SYMPOSIUM_DIR" ]; then
@@ -154,18 +177,24 @@ Your report (~2,500-4,000 words) should include:
 
 ## Completion
 
+**Your opposition bead**: OPPOSITION_BEAD_PLACEHOLDER
+
 When finished:
 1. Save your report to: $OUTPUT_DIR/opposition-report.md
 2. Commit your report:
    \`\`\`bash
    git add . && git commit -m "Opposition: Challenge to synthesis"
    \`\`\`
-3. Set your identity and mail the Convener:
+3. Close your opposition bead (this signals completion):
+   \`\`\`bash
+   cd /atlantis/philosophy && bd close OPPOSITION_BEAD_PLACEHOLDER
+   \`\`\`
+4. Mail the Convener (backup signal):
    \`\`\`bash
    export ATLANTIS_AGENT_NAME=opposition
-   atlantis-mail send convener "OPPOSITION_DONE" "Completed opposition report"
+   atlantis-mail send convener "OPPOSITION_DONE" "Completed opposition report - bead OPPOSITION_BEAD_PLACEHOLDER closed"
    \`\`\`
-4. Exit Claude (type /exit or Ctrl+C)
+5. Exit Claude (type /exit or Ctrl+C)
 
 ---
 
@@ -175,6 +204,9 @@ You are loyal opposition—you want New Atlantis to flourish. Your challenge is 
 
 Challenge with care. Contest with precision. Dissent with loyalty.
 ASSIGNMENT_EOF
+
+# Replace bead placeholder
+sed -i "s/OPPOSITION_BEAD_PLACEHOLDER/$OPPOSITION_BEAD/g" "$WORKSPACE/ASSIGNMENT.md"
 
 # Create tmux session
 echo "Creating tmux session..."
@@ -201,9 +233,13 @@ echo "Session: $SESSION_NAME"
 echo "Workspace: $WORKSPACE"
 echo "Challenging: $SYNTHESIS_FILE"
 echo "Output: $OUTPUT_DIR/opposition-report.md"
+echo "Opposition Bead: $OPPOSITION_BEAD"
 echo ""
 echo "Monitor with:"
 echo "  tmux attach -t $SESSION_NAME"
+echo ""
+echo "Check bead status:"
+echo "  cd /atlantis/philosophy && bd show $OPPOSITION_BEAD"
 echo ""
 echo "Detach with: Ctrl+B then D"
 echo ""

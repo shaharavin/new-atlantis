@@ -116,31 +116,42 @@ The Convener template is **1,030 lines** because it reimplements what `gt`/`bd` 
 
 **Goal**: Make `bd` available inside the container
 
+**Status**: ✅ COMPLETE (2026-01-27)
+
 Tasks:
-- [ ] Install beads CLI in Docker container
-- [ ] Verify `bd` commands work in container
-- [ ] Test basic operations: `bd create`, `bd update`, `bd list`, `bd close`
+- [x] Install beads CLI in Docker container (was already installed!)
+- [x] Verify `bd` commands work in container
+- [x] Fix repo ID mismatch with `bd migrate --update-repo-id`
+- [x] Test basic operations: `bd create`, `bd update`, `bd list`, `bd close`
+
+**Notes**: Beads was already installed in the Dockerfile (line 27-28). The issue was a repo ID mismatch from earlier work. Fixed with migration command. `bd` version 0.47.1 confirmed working.
 
 ### Phase 2: Bead-Based Symposium Tracking (Short-term)
 
 **Goal**: Track symposia and work items as beads, not files
 
+**Status**: 🔄 IN PROGRESS (2026-01-27)
+
 Tasks:
 - [ ] Create symposium as parent bead when activated
-- [ ] Create child beads for each scholar assignment
-- [ ] Update spawn scripts to use `bd update --status in_progress`
-- [ ] Replace `.completions/*.done` with `bd close`
-- [ ] Replace `.current-phase` with bead field
+- [x] Update `spawn-scholar.sh` to create work beads and use `bd close`
+- [x] Update `spawn-critic.sh` to create review beads and use `bd close`
+- [x] Update `spawn-opposition.sh` to create opposition beads and use `bd close`
+- [ ] Replace `.completions/*.done` with `bd list --status closed` in Convener
+- [ ] Replace `.current-phase` with bead field (or keep as simple backup)
 
 ### Phase 3: Slim the Convener (Short-term)
 
 **Goal**: Convener queries beads instead of managing filesystem state
 
+**Status**: 🔄 IN PROGRESS (2026-01-27)
+
 Tasks:
-- [ ] Replace completion detection with `bd list --status closed`
-- [ ] Remove background monitor scripts (beads persist state)
-- [ ] Simplify phase transition to bead field update
-- [ ] Reduce Convener template to ~300 lines
+- [x] Update `/convener-role` skill to use bead queries instead of `.completions/`
+- [x] Remove background monitor script instructions (beads persist state)
+- [x] Simplify patrol cycle to just query beads
+- [ ] Update main `templates/convener-CLAUDE.md` to match skill (or deprecate in favor of skill)
+- [ ] Test with a new symposium to validate beads flow
 
 ### Phase 4: Evaluate Gas Town's `gt` CLI (Medium-term)
 
