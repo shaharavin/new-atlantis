@@ -40,17 +40,19 @@ Work is tracked via **beads**, not filesystem markers. Each work item has a bead
 ```bash
 cd /atlantis/philosophy
 
-# List all open work beads for this symposium
-bd list --label symposium-NAME --status open
+# Show symposium and all children (best method - uses parent-child relationship)
+bd show SYMPOSIUM_BEAD
+# Children show ✓ when closed, ◐ when in_progress, ○ when open
 
-# List all closed (completed) beads
-bd list --label symposium-NAME --status closed
+# Or query by status
+bd list --status open   # Shows all open beads
+bd list --status closed # Shows all closed beads
 
 # Check specific agent's bead
 bd show ph-xyz
 ```
 
-When all beads for a phase are `closed`, the phase is complete.
+When all children of the symposium bead are `closed` (show ✓), the phase is complete.
 
 ### Create Symposium Bead (Phase 0)
 
@@ -58,7 +60,7 @@ When starting a new symposium:
 
 ```bash
 cd /atlantis/philosophy
-SYMPOSIUM_BEAD=$(bd create --title "Symposium: Topic Name" --label symposium --label symposium-NAME 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+SYMPOSIUM_BEAD=$(bd create --title "Symposium: Topic Name" --label symposium --label symposium-NAME 2>/dev/null | grep -oE 'ph-[a-z0-9.]+' | head -1)
 echo "Symposium bead: $SYMPOSIUM_BEAD"
 ```
 

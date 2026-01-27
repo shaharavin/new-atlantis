@@ -58,10 +58,10 @@ echo "→ Creating work bead..."
 cd /atlantis/philosophy
 BEAD_TITLE="Essay: $TOPIC_TITLE (Scholar $SCHOLAR_NAME)"
 if [ -n "$SYMPOSIUM_BEAD" ]; then
-    # Link to parent symposium bead
-    WORK_BEAD=$(bd create --title "$BEAD_TITLE" --label scholarly-work --label "scholar-$SCHOLAR_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+    # Link to parent symposium bead (note: child IDs can have dots like ph-abc.1)
+    WORK_BEAD=$(bd create --title "$BEAD_TITLE" --label scholarly-work --label "scholar-$SCHOLAR_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9.]+' | head -1)
 else
-    WORK_BEAD=$(bd create --title "$BEAD_TITLE" --label scholarly-work --label "scholar-$SCHOLAR_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+    WORK_BEAD=$(bd create --title "$BEAD_TITLE" --label scholarly-work --label "scholar-$SCHOLAR_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9.]+' | head -1)
 fi
 
 if [ -n "$WORK_BEAD" ]; then

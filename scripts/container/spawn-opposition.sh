@@ -66,9 +66,9 @@ echo "Creating opposition bead..."
 cd /atlantis/philosophy
 BEAD_TITLE="Opposition: Challenge to synthesis by $OPPOSITION_NAME"
 if [ -n "$SYMPOSIUM_BEAD" ]; then
-    OPPOSITION_BEAD=$(bd create --title "$BEAD_TITLE" --label opposition --label "critic-$OPPOSITION_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+    OPPOSITION_BEAD=$(bd create --title "$BEAD_TITLE" --label opposition --label "critic-$OPPOSITION_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9.]+' | head -1)
 else
-    OPPOSITION_BEAD=$(bd create --title "$BEAD_TITLE" --label opposition --label "critic-$OPPOSITION_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+    OPPOSITION_BEAD=$(bd create --title "$BEAD_TITLE" --label opposition --label "critic-$OPPOSITION_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9.]+' | head -1)
 fi
 
 if [ -n "$OPPOSITION_BEAD" ]; then

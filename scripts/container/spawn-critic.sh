@@ -67,9 +67,9 @@ echo "→ Creating review bead..."
 cd /atlantis/philosophy
 BEAD_TITLE="Review: $WORK_BASENAME by Critic $CRITIC_NAME"
 if [ -n "$SYMPOSIUM_BEAD" ]; then
-    REVIEW_BEAD=$(bd create --title "$BEAD_TITLE" --label review --label "critic-$CRITIC_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+    REVIEW_BEAD=$(bd create --title "$BEAD_TITLE" --label review --label "critic-$CRITIC_NAME" --parent "$SYMPOSIUM_BEAD" 2>/dev/null | grep -oE 'ph-[a-z0-9.]+' | head -1)
 else
-    REVIEW_BEAD=$(bd create --title "$BEAD_TITLE" --label review --label "critic-$CRITIC_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9]+' | head -1)
+    REVIEW_BEAD=$(bd create --title "$BEAD_TITLE" --label review --label "critic-$CRITIC_NAME" 2>/dev/null | grep -oE 'ph-[a-z0-9.]+' | head -1)
 fi
 
 if [ -n "$REVIEW_BEAD" ]; then
