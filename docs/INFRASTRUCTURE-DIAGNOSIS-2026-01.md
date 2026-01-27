@@ -130,28 +130,34 @@ Tasks:
 
 **Goal**: Track symposia and work items as beads, not files
 
-**Status**: 🔄 IN PROGRESS (2026-01-27)
+**Status**: ✅ MOSTLY COMPLETE (2026-01-27)
 
 Tasks:
-- [ ] Create symposium as parent bead when activated
 - [x] Update `spawn-scholar.sh` to create work beads and use `bd close`
 - [x] Update `spawn-critic.sh` to create review beads and use `bd close`
 - [x] Update `spawn-opposition.sh` to create opposition beads and use `bd close`
-- [ ] Replace `.completions/*.done` with `bd list --status closed` in Convener
-- [ ] Replace `.current-phase` with bead field (or keep as simple backup)
+- [x] Fix bead ID parsing for parent-child relationships (IDs like `ph-abc.1`)
+- [x] Dry-run tested: parent-child linking works correctly
+- [ ] Create symposium as parent bead when activated (Convener's job)
+- [ ] Keep `.current-phase` for human readability (beads are source of truth)
+
+**Notes**: Spawn scripts now create child beads linked to symposium parent. Convener uses `bd show SYMPOSIUM_BEAD` to see children with status indicators (✓ closed, ◐ in_progress).
 
 ### Phase 3: Slim the Convener (Short-term)
 
 **Goal**: Convener queries beads instead of managing filesystem state
 
-**Status**: 🔄 IN PROGRESS (2026-01-27)
+**Status**: ✅ SKILL UPDATED (2026-01-27)
 
 Tasks:
 - [x] Update `/convener-role` skill to use bead queries instead of `.completions/`
 - [x] Remove background monitor script instructions (beads persist state)
 - [x] Simplify patrol cycle to just query beads
-- [ ] Update main `templates/convener-CLAUDE.md` to match skill (or deprecate in favor of skill)
-- [ ] Test with a new symposium to validate beads flow
+- [x] Clarify `bd show SYMPOSIUM_BEAD` as best completion check method
+- [ ] Update main `templates/convener-CLAUDE.md` to match skill (or deprecate)
+- [ ] Test with a real symposium (next symposium will be first beads-native)
+
+**Notes**: The `/convener-role` skill is now beads-native. The old 1030-line template should either be updated to match or deprecated in favor of the skill.
 
 ### Phase 4: Evaluate Gas Town's `gt` CLI (Medium-term)
 
