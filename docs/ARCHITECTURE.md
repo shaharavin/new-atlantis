@@ -675,16 +675,19 @@ The Convener selects 3 traditions per symposium for productive tension. See `doc
 | `scripts/container/spawn-scholar.sh` | Spawn a scholar agent |
 | `scripts/container/spawn-critic.sh` | Spawn a critic agent |
 | `scripts/container/spawn-opposition.sh` | Spawn an opposition critic |
-| `scripts/container/run-public-essay.sh` | Run public essay workflow |
+| `scripts/container/spawn-synthesizer.sh` | Spawn a synthesizer agent |
+| `scripts/container/spawn-bibliographer.sh` | Spawn a bibliographer agent |
+| `scripts/container/run-public-essay.sh` | Run public essay workflow (to be deprecated in favor of Convener) |
 
-### Spawn Scripts (Host-side, for human operators)
+### Host-Side Scripts (for human operators)
 | File | Purpose |
 |------|---------|
+| `scripts/spawn-convener.sh` | Spawn convener from host |
+| `scripts/cleanup-symposium.sh` | Copy outputs, kill sessions, commit, push |
 | `scripts/spawn-scholar.sh` | Spawn scholar from host |
 | `scripts/spawn-critic.sh` | Spawn critic from host |
 | `scripts/spawn-multiple-scholars.sh` | Parallel scholar spawning |
 | `scripts/spawn-multiple-critics.sh` | Parallel critic spawning |
-| `scripts/spawn-convener.sh` | Spawn convener from host |
 | `scripts/retire-agent.sh` | Gracefully stop an agent |
 | `scripts/monitor-agents.sh` | Split-screen monitoring |
 

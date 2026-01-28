@@ -6,24 +6,16 @@
 # Usage:
 #   bd cook symposium
 #   bd mol pour symposium --var topic="Excellence and Quality Standards"
+#
+# The Convener reads this file to know what to do at each phase.
+# Each step's description includes operational instructions.
 
 description = """
-Symposium Molecule: 10-phase philosophical discourse workflow.
+Symposium Molecule: 12-phase philosophical discourse workflow.
 
 Coordinates scholars, critics, and synthesizers through structured
-intellectual discourse from independent work through synthesis.
-
-## Phases
-1. **independent-work**: Scholars write essays independently
-2. **independent-review**: Critics assess all works
-3. **independent-revision**: Scholars respond to reviews
-4. **cross-review**: Critics compare their assessments
-5. **cross-work-review**: Comparative analysis across works
-6. **synthesis**: New scholar integrates perspectives
-7. **opposition**: Loyal dissent challenges synthesis
-8. **final-critique**: Critics assess synthesis
-9. **convener-report**: Operational documentation
-10. **recognition**: Honor all contributors
+intellectual discourse from independent work through synthesis, with
+bibliography and archival.
 
 ## Philosophy
 - Quality over velocity (deep work takes time)
@@ -31,117 +23,266 @@ intellectual discourse from independent work through synthesis.
 - Beads track work; discourse emerges organically
 """
 formula = "symposium"
-version = 1
+version = 2
 
-# Step definitions - each becomes a child bead when molecule is poured
+# ─── Step definitions ───
+# Each step becomes a child bead when the molecule is poured.
+# The Convener reads each step's description to know what to do.
+#
+# Fields used by the Convener:
+#   agent_type  - "spawn" (spawn agents), "convener" (Convener does it)
+#   spawn_script - which container script to use (if agent_type = "spawn")
+#   agent_count - "N" means one per scholar/critic, a number means fixed
+#   model       - which Claude model the spawned agent should use
 
 [[steps]]
 id = "phase-1"
 title = "Phase 1: Independent Work"
+agent_type = "spawn"
+spawn_script = "spawn-scholar.sh"
+agent_count = "N"
+model = "opus"
 description = """
 Scholars write essays independently on the symposium topic.
 
-Use spawn-scholar.sh for each scholar with the symposium bead ID.
-Phase complete when all scholar beads are closed.
+CONVENER ACTIONS:
+1. Select 3 philosophical traditions appropriate for the topic
+2. Write tradition files to /tmp/tradition-<name>.md
+3. For each scholar:
+   /atlantis/philosophy/scripts/container/spawn-scholar.sh <name> "<topic>" /tmp/tradition-<name>.md $SYMPOSIUM_BEAD
+4. Record names: echo -e "name1\nname2\nname3" > $SYMPOSIUM_DIR/.scholars
+5. Launch monitor with expected count = number of scholars spawned
+
+OUTPUT: $SYMPOSIUM_DIR/phase-1-independent-work/*.md (essays)
 """
 
 [[steps]]
 id = "phase-2"
 title = "Phase 2: Independent Review"
 needs = ["phase-1"]
+agent_type = "spawn"
+spawn_script = "spawn-critic.sh"
+agent_count = "N"
+model = "opus"
 description = """
 Critics review all works from Phase 1.
 
-Each critic reviews ALL essays. Use spawn-critic.sh with symposium bead ID.
-Phase complete when all critic beads are closed.
+Each critic reviews ALL essays (not just one). Typically 3 critics.
+
+CONVENER ACTIONS:
+1. Collect essay paths from phase-1-independent-work/
+2. For each critic:
+   /atlantis/philosophy/scripts/container/spawn-critic.sh <name> <essay-path> $SYMPOSIUM_DIR $SYMPOSIUM_BEAD
+   NOTE: spawn-critic.sh takes a single essay path but critic ASSIGNMENT.md
+   should list ALL essays. Update the assignment after spawning if needed,
+   or spawn one critic per essay depending on workflow preference.
+3. Record names: echo -e "name1\nname2\nname3" > $SYMPOSIUM_DIR/.critics
+4. Launch monitor with expected count = number of critics spawned
+
+OUTPUT: $SYMPOSIUM_DIR/phase-2-independent-review/*.md (reviews)
 """
 
 [[steps]]
 id = "phase-3"
 title = "Phase 3: Independent Revision"
 needs = ["phase-2"]
+agent_type = "spawn"
+spawn_script = "spawn-scholar.sh"
+agent_count = "N"
+model = "opus"
 description = """
-Scholars revise based on reviews.
+Scholars revise their essays based on reviews.
 
-Each scholar receives their reviews and produces revised essay.
-Phase complete when all revision beads are closed.
+Each scholar receives their reviews and produces a revised essay.
+
+CONVENER ACTIONS:
+1. For each scholar from Phase 1, re-spawn with reviews as additional context:
+   - Create a revision assignment that points to their original essay AND their reviews
+   - Use spawn-scholar.sh with a revision-focused tradition file
+2. Launch monitor with expected count = number of scholars
+
+OUTPUT: $SYMPOSIUM_DIR/phase-3-independent-revision/*.md (revised essays)
 """
 
 [[steps]]
 id = "phase-4"
 title = "Phase 4: Cross-Review"
 needs = ["phase-3"]
+agent_type = "spawn"
+spawn_script = "manual"
+agent_count = "1"
+model = "opus"
 description = """
-Critics compare their assessments.
+Critics compare their assessments (editorial board).
 
-Critics discuss where they converged/diverged in assessments.
-Single bead for this phase (editorial board).
+One agent reads all reviews and identifies convergence/divergence patterns.
+
+CONVENER ACTIONS:
+1. Create a bead manually:
+   PHASE_BEAD=$(bd create --title "Cross-Review: Editorial Board" --label cross-review --parent $SYMPOSIUM_BEAD | grep -oE 'ph-[a-z0-9.]+' | head -1)
+   bd update $PHASE_BEAD --status in_progress
+2. Create tmux session and spawn agent manually (see /convener-role skill for pattern)
+3. Agent reads all reviews from phase-2, writes cross-review report
+4. Agent closes $PHASE_BEAD when done
+5. Launch monitor with expected count = (current closed + 1)
+
+OUTPUT: $SYMPOSIUM_DIR/phase-4-cross-review/cross-review-report.md
 """
 
 [[steps]]
 id = "phase-5"
 title = "Phase 5: Cross-Work Review"
 needs = ["phase-4"]
+agent_type = "spawn"
+spawn_script = "manual"
+agent_count = "1"
+model = "opus"
 description = """
 Comparative analysis across all works.
 
-Identify points of agreement, disagreement, and synthesis opportunities.
-Single bead for this phase.
+One agent compares the revised essays, identifying synthesis opportunities.
+
+CONVENER ACTIONS:
+1. Same manual bead + tmux pattern as Phase 4
+2. Agent reads revised essays (phase-3) and cross-review (phase-4)
+3. Agent writes comparative analysis
+4. Agent closes bead when done
+5. Launch monitor with expected count = (current closed + 1)
+
+OUTPUT: $SYMPOSIUM_DIR/phase-5-cross-work-review/comparative-analysis.md
 """
 
 [[steps]]
 id = "phase-6"
 title = "Phase 6: Synthesis"
 needs = ["phase-5"]
+agent_type = "spawn"
+spawn_script = "spawn-synthesizer.sh"
+agent_count = "1"
+model = "opus"
 description = """
-New scholar integrates perspectives.
+New scholar integrates perspectives into a unified framework.
 
-Create unified framework stronger than any single approach.
-Single bead for this phase.
+CONVENER ACTIONS:
+1. Spawn synthesizer:
+   /atlantis/philosophy/scripts/container/spawn-synthesizer.sh omega $SYMPOSIUM_DIR $SYMPOSIUM_BEAD
+2. Launch monitor with expected count = (current closed + 1)
+
+OUTPUT: $SYMPOSIUM_DIR/phase-6-synthesis/synthesis.md
 """
 
 [[steps]]
 id = "phase-7"
 title = "Phase 7: Opposition"
 needs = ["phase-6"]
+agent_type = "spawn"
+spawn_script = "spawn-opposition.sh"
+agent_count = "1"
+model = "opus"
 description = """
-Loyal opposition challenges synthesis.
+Loyal opposition challenges the synthesis.
 
-Challenge conclusions, represent foreclosed perspectives.
-Use spawn-opposition.sh with symposium bead ID.
+The opposition critic argues for alternatives and represents foreclosed perspectives.
+
+CONVENER ACTIONS:
+1. Find the synthesis file from phase-6
+2. Spawn opposition:
+   /atlantis/philosophy/scripts/container/spawn-opposition.sh opposition <synthesis-path> $SYMPOSIUM_DIR $SYMPOSIUM_BEAD
+3. Launch monitor with expected count = (current closed + 1)
+
+OUTPUT: $SYMPOSIUM_DIR/phase-7-opposition/opposition-report.md
 """
 
 [[steps]]
 id = "phase-8"
 title = "Phase 8: Final Critique"
 needs = ["phase-7"]
+agent_type = "spawn"
+spawn_script = "spawn-critic.sh"
+agent_count = "N"
+model = "opus"
 description = """
-Critics assess synthesis in light of opposition.
+Critics assess the synthesis in light of the opposition.
 
-Assess whether synthesis genuinely integrates perspectives.
-One bead per critic reviewing.
+Each critic evaluates whether the synthesis genuinely integrates perspectives
+and whether the opposition's challenges are adequately addressed.
+
+CONVENER ACTIONS:
+1. Spawn critics (same critics as Phase 2, or new ones):
+   /atlantis/philosophy/scripts/container/spawn-critic.sh <name> <synthesis-path> $SYMPOSIUM_DIR $SYMPOSIUM_BEAD
+2. Launch monitor with expected count = number of critics spawned
+
+OUTPUT: $SYMPOSIUM_DIR/phase-8-final-critique/*.md
 """
 
 [[steps]]
 id = "phase-9"
 title = "Phase 9: Convener Report"
 needs = ["phase-8"]
+agent_type = "convener"
 description = """
-Convener documents the symposium.
+Convener documents the symposium. No agents to spawn.
 
-Document workflow, timeline, costs, process improvements.
+CONVENER ACTIONS:
+1. Write $SYMPOSIUM_DIR/phase-9-convener-report/convener-report.md
+2. Include: timeline, participants, phase summaries, cost estimates, process notes, lessons learned
+3. Move to next phase (no monitor needed)
 """
 
 [[steps]]
 id = "phase-10"
 title = "Phase 10: Recognition"
 needs = ["phase-9"]
+agent_type = "convener"
 description = """
-Honor all contributors.
+Honor all contributors. No agents to spawn.
 
-- CONTRIBUTORS.md: Honor roll
-- METRICS.md: Quantitative summary
-- recognition-report.md: Narrative appreciation
+CONVENER ACTIONS:
+1. Write $SYMPOSIUM_DIR/phase-10-recognition/CONTRIBUTORS.md (honor roll)
+2. Write $SYMPOSIUM_DIR/phase-10-recognition/METRICS.md (quantitative summary)
+3. Move to next phase (no monitor needed)
+"""
 
-Close symposium bead after this phase.
+[[steps]]
+id = "phase-11"
+title = "Phase 11: Bibliography"
+needs = ["phase-10"]
+agent_type = "spawn"
+spawn_script = "spawn-bibliographer.sh"
+agent_count = "1"
+model = "haiku"
+description = """
+Bibliographer extracts and verifies citations from all symposium outputs.
+
+CONVENER ACTIONS:
+1. Spawn bibliographer:
+   /atlantis/philosophy/scripts/container/spawn-bibliographer.sh $SYMPOSIUM_DIR $SYMPOSIUM_BEAD
+2. Launch monitor with expected count = (current closed + 1)
+
+OUTPUT: Updated philosophy-references.bib + $SYMPOSIUM_DIR/bibliographer-report.md
+"""
+
+[[steps]]
+id = "phase-12"
+title = "Phase 12: Archive"
+needs = ["phase-11"]
+agent_type = "convener"
+description = """
+Convener writes the symposium README and signals completion. No agents to spawn.
+
+CONVENER ACTIONS:
+1. Write $SYMPOSIUM_DIR/README.md with:
+   - Symposium question and date
+   - Participants (scholars + traditions, critics)
+   - Phase navigation links (link to each phase-*/ directory)
+   - Key findings (from synthesis)
+   - Statistics (document count, word estimate)
+   - Citation format
+2. Close the symposium bead:
+   cd /atlantis/philosophy && bd close $SYMPOSIUM_BEAD
+3. Mail the Founder:
+   atlantis-mail send founder "SYMPOSIUM_COMPLETE" "Symposium finished. README written. Ready for cleanup."
+4. Exit
+
+The human will then run scripts/cleanup-symposium.sh from the host to copy, commit, and push.
 """

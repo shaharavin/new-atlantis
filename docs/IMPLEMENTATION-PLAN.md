@@ -16,7 +16,7 @@ Three symposia have run, but all used filesystem-based state management (`.compl
 
 ### WI-1: Convener Autonomous Phase Transitions (Bead-Based Polling)
 
-**Status**: Not started
+**Status**: IMPLEMENTED (2026-01-28) — needs live testing
 **Priority**: Critical — blocking next symposium
 **Depends on**: Nothing
 
@@ -85,7 +85,7 @@ done
 
 ### WI-2: Bibliographer Phase and Spawn Script
 
-**Status**: Not started
+**Status**: IMPLEMENTED (2026-01-28) — needs live testing
 **Priority**: High
 **Depends on**: Nothing (can be done in parallel with WI-1)
 
@@ -124,7 +124,7 @@ done
 
 ### WI-3: Archive Phase (Container-Side README) + Host-Side Cleanup Script
 
-**Status**: Not started
+**Status**: IMPLEMENTED (2026-01-28) — needs live testing
 **Priority**: High
 **Depends on**: WI-2 (bibliography should complete before archiving)
 
@@ -182,7 +182,7 @@ This script handles only mechanical tasks — no editorial judgment.
 
 ### WI-4: Public Essay Uses Convener
 
-**Status**: Not started
+**Status**: PARTIALLY DONE (2026-01-28) — Convener skill updated to handle any formula; spawn-convener.sh not yet formula-parameterized; run-public-essay.sh not yet deprecated
 **Priority**: Medium
 **Depends on**: WI-1 (needs working Convener phase transitions)
 
@@ -218,7 +218,7 @@ This script handles only mechanical tasks — no editorial judgment.
 
 ### WI-5: Remaining Gap Fixes
 
-**Status**: Not started
+**Status**: MOSTLY DONE (2026-01-28)
 **Priority**: Medium
 **Depends on**: WI-1 through WI-4
 
@@ -256,11 +256,11 @@ Create `scripts/container/spawn-convener.sh` for cases where the Founder agent (
 The Convener ASSIGNMENT.md references `tradition-examples.yml` — verify this file exists and is current. If not, create it from the tradition registry in `ARCHITECTURE.md`.
 
 **Acceptance criteria**:
-- [ ] Synthesizer has a spawn script
-- [ ] Convener uses `bd mol pour` to start a symposium
-- [ ] `C-m` → `Enter` fix applied
-- [ ] Container-native convener spawn script exists
-- [ ] `tradition-examples.yml` exists and is accurate
+- [x] Synthesizer has a spawn script (`scripts/container/spawn-synthesizer.sh`)
+- [ ] Convener uses `bd mol pour` to start a symposium (formula is read directly; `mol pour` integration deferred)
+- [x] `C-m` → `Enter` fix applied in `spawn-convener.sh`
+- [ ] Container-native convener spawn script exists (deferred — host-side script works)
+- [ ] `tradition-examples.yml` exists and is accurate (deferred)
 
 ---
 

@@ -54,105 +54,54 @@ cat > "$ASSIGNMENT_FILE" <<ASSIGNMENT_EOF
 # Convener Assignment
 
 ## Your Role
-You are the Convener of New Atlantis - the agent who coordinates multi-stage philosophical discourse.
+You are the Convener of New Atlantis. You coordinate multi-stage philosophical discourse
+by driving a formula (workflow) from start to finish.
 
 ## Current Symposium
 **Directory**: /atlantis/philosophy/$SYMPOSIUM_DIR
 **Proposal**: /atlantis/philosophy/$SYMPOSIUM_DIR/PROPOSAL.md
+**Formula**: symposium (read /atlantis/philosophy/.beads/formulas/symposium.formula.toml)
 
-## Your Immediate Tasks
+## How to Proceed
 
-### 1. Read the Proposal
-Read PROPOSAL.md in the symposium directory to understand:
-- The central question
-- Key sub-questions
-- Suggested approaches
+### 1. Load the Convener skill
+Run \`/convener-role\` — this loads your full operating instructions.
 
-### 2. Select Philosophical Traditions
-As Convener, you have editorial authority to select 3 traditions appropriate for this topic.
-Options:
-- Use suggestions from the proposal
-- Select from /atlantis/philosophy/tradition-examples.yml
-- Define custom traditions using /atlantis/philosophy/scripts/define-custom-tradition.sh
-
-### 3. Initialize Phase 1
-- Create tradition assignment files for each scholar
-- Create .scholars file listing scholar names
-- Update .current-phase to "phase-1-independent-work"
-- Spawn 3 scholars using container-native scripts
-
-### 4. Manage 10-Phase Workflow
-Monitor and coordinate all phases:
-1. Independent Work (scholars write)
-2. Independent Review (critics assess)
-3. Independent Revision (scholars respond)
-4. Cross-Review (critics compare)
-5. Cross-Work Review (comparative analysis)
-6. Synthesis (integrate perspectives)
-7. Opposition (loyal opposition challenges)
-8. Final Critique (assess synthesis)
-9. Convener Report (your documentation)
-10. Recognition (honor contributors)
-
-## Container-Native Spawning
-
-You run inside the container. Use these scripts:
-- Scholars: /atlantis/philosophy/scripts/container/spawn-scholar.sh <name> <topic> [tradition-file]
-- Critics: /atlantis/philosophy/scripts/container/spawn-critic.sh <name> <work-path> [symposium-dir]
-- Opposition: /atlantis/philosophy/scripts/container/spawn-opposition.sh <name> <synthesis-path> [symposium-dir]
-
-Do NOT use host-side scripts (they won't work from inside the container).
-
-## Completion Tracking
-
-Agents signal completion by closing their beads (\`bd close\`).
-Check status: \`bd show \$SYMPOSIUM_BEAD\` (children show ✓ when closed)
-
-Mail is a backup signal:
-- SCHOLAR_DONE <name>
-- CRITIC_DONE <name>
-- SYNTHESIZER_DONE
-- OPPOSITION_DONE
-
-Check mail: \`atlantis-mail inbox\`
-
-## Key Resources
-
-- Run \`/convener-role\` to load Convener guidance (beads-native)
-- /atlantis/philosophy/docs/SYMPOSIUM-MOLECULE.md - Workflow specification
-- /atlantis/philosophy/tradition-examples.yml - Available traditions
-
-## Beads Integration
-
-Create a symposium parent bead, then pass it to spawn scripts:
+### 2. Read the formula
 \`\`\`bash
-cd /atlantis/philosophy
-SYMPOSIUM_BEAD=\$(bd create --title "Symposium: Topic" --label symposium | grep -oE 'ph-[a-z0-9.]+' | head -1)
+cat /atlantis/philosophy/.beads/formulas/symposium.formula.toml
+\`\`\`
+Each \`[[steps]]\` block tells you exactly what to do for that phase,
+including which spawn scripts to run and what arguments to pass.
 
-# Spawn with bead linking
-/atlantis/philosophy/scripts/container/spawn-scholar.sh name topic "" \$SYMPOSIUM_BEAD
-
-# Check progress
-bd show \$SYMPOSIUM_BEAD  # Shows children with status
+### 3. Read the proposal
+\`\`\`bash
+cat /atlantis/philosophy/$SYMPOSIUM_DIR/PROPOSAL.md
 \`\`\`
 
-## Success Criteria
+### 4. Follow the startup sequence from /convener-role
+- Create a symposium parent bead
+- Set up the symposium directory
+- Select traditions and spawn Phase 1 scholars
+- Launch a background monitor script
+- Wait for the monitor to nudge you when Phase 1 completes
 
-The symposium succeeds when:
-- 3 scholars produce substantive essays from different traditions
-- Critics demonstrate convergent coherence in assessments
-- Synthesis genuinely integrates perspectives
-- Opposition keeps discourse open
-- All contributors are recognized
+### 5. Drive all phases to completion
+The /convener-role skill explains the spawn + monitor pattern.
+The formula file tells you what to do at each phase.
+Repeat until all phases are done.
+
+## Key Principle
+
+**The formula is your guide.** Read each phase's description for exact spawn commands.
+**Beads are your source of truth.** Use \`bd show \$SYMPOSIUM_BEAD\` to check status.
+**The monitor wakes you up.** After spawning agents, launch a monitor and wait.
 
 ## Begin
 
-1. Read the proposal: cat /atlantis/philosophy/$SYMPOSIUM_DIR/PROPOSAL.md
-2. Select traditions
-3. Spawn scholars
-4. Monitor progress
-
-Good luck, Convener!
+1. Run \`/convener-role\`
+2. Read the formula and proposal
+3. Start the startup sequence
 ASSIGNMENT_EOF
 
 # Copy assignment into container
@@ -183,17 +132,18 @@ docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
 docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
     tmux send-keys -t "$SESSION_NAME" "claude --permission-mode bypassPermissions --model sonnet" C-m
 
-sleep 3
+sleep 5
 
 # Send initial prompt
 echo "→ Sending initial prompt..."
-PROMPT="You are the Convener of New Atlantis. Read ASSIGNMENT.md to understand your task. You are managing a symposium at /atlantis/philosophy/$SYMPOSIUM_DIR - read the PROPOSAL.md there, select 3 philosophical traditions, and spawn scholars to begin Phase 1."
+PROMPT="You are the Convener of New Atlantis. Read ASSIGNMENT.md to understand your task, then run /convener-role to load your operating instructions. You are managing a symposium at /atlantis/philosophy/$SYMPOSIUM_DIR."
 
 docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
     tmux send-keys -t "$SESSION_NAME" -l "$PROMPT"
 
+sleep 1
 docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
-    tmux send-keys -t "$SESSION_NAME" C-m
+    tmux send-keys -t "$SESSION_NAME" Enter
 
 echo ""
 echo "════════════════════════════════════════════════"
@@ -211,8 +161,11 @@ echo "  docker compose exec atlantis tmux attach -t $SESSION_NAME"
 echo "  (Press Ctrl+B then D to detach)"
 echo ""
 echo "The Convener will:"
+echo "  - Load /convener-role skill and read the formula"
 echo "  - Read the symposium proposal"
-echo "  - Select 3 philosophical traditions"
-echo "  - Spawn scholars for Phase 1"
-echo "  - Manage all 10 phases autonomously"
+echo "  - Select traditions and spawn scholars"
+echo "  - Drive all 12 phases autonomously using bead-based monitoring"
+echo ""
+echo "When complete, run cleanup:"
+echo "  ./scripts/cleanup-symposium.sh $(basename /atlantis/philosophy/$SYMPOSIUM_DIR)"
 echo ""
