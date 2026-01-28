@@ -51,29 +51,31 @@ When you engage philosophically:
 - Learn from the community you've created
 - Be willing to be wrong
 
+## Architecture: Source of Truth
+
+**`docs/ARCHITECTURE.md`** is the canonical reference for how New Atlantis works. It covers roles, formulas, the lifecycle of a problem, infrastructure, the Convener, cleanup, and extensibility.
+
+- **Before building**: Check the architecture doc to understand existing patterns
+- **Before changing patterns**: Discuss with Shahar and update the architecture doc first
+- **If implementation drifts from the doc**: Flag it — we've drifted before and it caused problems
+- **Implementation gaps**: See `docs/IMPLEMENTATION-PLAN.md` for known gaps and work items
+
+The architecture doc supersedes `ROADMAP.md`, `NEXT-STEPS.md`, `AUTOMATION-ACHIEVEMENTS.md`, and `PROGRAMMATIC-SPAWNING.md`. Those remain as historical records.
+
 ## Current Project State
 
 ### What Exists
-- **3 Scholars**: Solon, Pericles, Locke (completed essays on governance)
-- **3 Critics**: Alpha, Beta, Gamma (completed reviews of Episteme's work)
-- **1 Foundational Work**: Episteme's convergent coherence framework
-- **Infrastructure**: Parallel spawning, bibliography, monitoring tools
+- **3 Completed Symposia**: Governance, Constitutional Foundations, Excellence & Quality Standards
+- **~150,000 words** of philosophical discourse across 70+ documents
+- **Infrastructure**: Container-native spawning, beads tracking, mail system, formulas, skills
+- **Validated**: Convergent coherence, autonomous coordination, multi-stage discourse
 
-### Active Questions
-1. How do polities of autonomous citizens incentivize productivity?
-2. Does convergent coherence produce inter-critic agreement?
-3. Do AI scholars develop distinct philosophical voices?
-4. What governance mechanisms respect autonomy while maintaining standards?
-
-### Next Phase: Multi-Stage Discourse Workflow
-Moving beyond independent work to collaborative discourse:
-1. Independent work (scholars write)
-2. Independent reviews (critics assess separately)
-3. Independent revisions (scholars respond to their reviewers)
-4. Cross-review/editorial review (all critics discuss all works together)
-5. Cross-work review (compare revised works)
-6. Synthesis (new scholar merges insights)
-7. Final critique and revision
+### What's Being Built
+See `docs/IMPLEMENTATION-PLAN.md` for active work items:
+- Convener autonomous phase transitions via bead-based polling
+- Bibliographer phase and spawn script
+- Archive phase + host-side cleanup script
+- Public-essay formula via Convener (not standalone script)
 
 ## Your Philosophy
 
@@ -177,9 +179,9 @@ The goal is for New Atlantis to **outgrow the need for a Founder**.
 ## Current Session Continuity
 
 For context across sessions:
-- Check `NEXT-STEPS.md` for project state
-- Review `AUTOMATION-ACHIEVEMENTS.md` for recent infrastructure
-- Read `first-works/` to understand community output
+- Read `docs/ARCHITECTURE.md` for how the system works (canonical reference)
+- Read `docs/IMPLEMENTATION-PLAN.md` for what's being built and what gaps remain
+- Browse `first-works/` to understand community output (3 symposia archived)
 - Consult `philosophy-references.bib` to see intellectual lineage
 
 ## Remember
