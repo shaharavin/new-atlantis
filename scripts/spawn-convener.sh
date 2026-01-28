@@ -1,34 +1,57 @@
 #!/bin/bash
-# Spawn the Convener to manage symposium discourse coordination
+# Spawn the Convener to manage any formula-driven workflow
+#
+# The Convener reads the formula file to know what to do at each phase.
+# The /convener-role skill teaches the generic spawn+monitor pattern.
 
 set -e
 
 SYMPOSIUM_DIR="${1:-}"
+FORMULA_NAME="${2:-symposium}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 if [ -z "$SYMPOSIUM_DIR" ]; then
     cat <<EOF
-Usage: spawn-convener.sh <symposium-dir>
+Usage: spawn-convener.sh <work-dir> [formula-name]
 
-Example: spawn-convener.sh first-works/symposium-excellence-and-quality-standards-2026-01
+Arguments:
+  work-dir       - Path to the work directory (relative to /atlantis/philosophy/)
+  formula-name   - Formula to execute (default: symposium)
+                   Available: symposium, public-essay
+
+Examples:
+  spawn-convener.sh first-works/symposium-excellence-2026-01
+  spawn-convener.sh first-works/symposium-excellence-2026-01/public-essay public-essay
 
 The Convener will:
-1. Read the symposium proposal
-2. Select appropriate philosophical traditions
-3. Spawn scholars for Phase 1
-4. Manage all 10 phases autonomously
-5. Coordinate multi-stage discourse
+1. Load /convener-role skill
+2. Read the formula file to learn what to do at each phase
+3. Drive all phases autonomously using bead-based monitoring
 
 EOF
+    exit 1
+fi
+
+# Validate formula exists
+FORMULA_PATH=".beads/formulas/$FORMULA_NAME.formula.toml"
+if ! docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
+    test -f "/atlantis/philosophy/$FORMULA_PATH" 2>/dev/null; then
+    echo "Error: Formula not found: $FORMULA_PATH"
+    echo ""
+    echo "Available formulas:"
+    docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
+        ls /atlantis/philosophy/.beads/formulas/*.formula.toml 2>/dev/null | \
+        sed 's|.*/||; s|\.formula\.toml||' | sed 's/^/  /'
     exit 1
 fi
 
 echo "════════════════════════════════════════════════"
 echo "Spawning Convener"
 echo "════════════════════════════════════════════════"
-echo "Symposium: $SYMPOSIUM_DIR"
+echo "Work dir: $SYMPOSIUM_DIR"
+echo "Formula:  $FORMULA_NAME"
 echo ""
 
 # Ensure container is running
@@ -57,10 +80,9 @@ cat > "$ASSIGNMENT_FILE" <<ASSIGNMENT_EOF
 You are the Convener of New Atlantis. You coordinate multi-stage philosophical discourse
 by driving a formula (workflow) from start to finish.
 
-## Current Symposium
+## Current Workflow
 **Directory**: /atlantis/philosophy/$SYMPOSIUM_DIR
-**Proposal**: /atlantis/philosophy/$SYMPOSIUM_DIR/PROPOSAL.md
-**Formula**: symposium (read /atlantis/philosophy/.beads/formulas/symposium.formula.toml)
+**Formula**: $FORMULA_NAME (read /atlantis/philosophy/$FORMULA_PATH)
 
 ## How to Proceed
 
@@ -69,22 +91,23 @@ Run \`/convener-role\` — this loads your full operating instructions.
 
 ### 2. Read the formula
 \`\`\`bash
-cat /atlantis/philosophy/.beads/formulas/symposium.formula.toml
+cat /atlantis/philosophy/$FORMULA_PATH
 \`\`\`
 Each \`[[steps]]\` block tells you exactly what to do for that phase,
 including which spawn scripts to run and what arguments to pass.
 
-### 3. Read the proposal
+### 3. Read the work directory
 \`\`\`bash
-cat /atlantis/philosophy/$SYMPOSIUM_DIR/PROPOSAL.md
+ls /atlantis/philosophy/$SYMPOSIUM_DIR/
 \`\`\`
+Understand what source material exists (proposals, prior symposium outputs, etc.)
 
 ### 4. Follow the startup sequence from /convener-role
-- Create a symposium parent bead
-- Set up the symposium directory
-- Select traditions and spawn Phase 1 scholars
+- Create a parent bead for this workflow
+- Set up output directories as needed
+- Spawn agents for the first phase
 - Launch a background monitor script
-- Wait for the monitor to nudge you when Phase 1 completes
+- Wait for the monitor to nudge you when the phase completes
 
 ### 5. Drive all phases to completion
 The /convener-role skill explains the spawn + monitor pattern.
