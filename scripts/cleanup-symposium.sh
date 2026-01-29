@@ -4,17 +4,27 @@
 # This is the host-side counterpart to the Convener's archive phase.
 # The Convener writes the README/WORKFLOW_COMPLETE inside the container;
 # this script handles the mechanical tasks that require host access.
+#
+# Usage:
+#   ./scripts/cleanup-symposium.sh <work-path> [--no-confirm]
+#
+# The --no-confirm flag skips interactive prompts (useful for automation).
 
 set -e
 
 WORK_PATH="$1"
+NO_CONFIRM=""
+if [ "$2" = "--no-confirm" ]; then
+    NO_CONFIRM="yes"
+fi
 
 if [ -z "$WORK_PATH" ]; then
     cat <<EOF
-Usage: cleanup-symposium.sh <work-path>
+Usage: cleanup-symposium.sh <work-path> [--no-confirm]
 
 Arguments:
-  work-path  - Path relative to first-works/ (can include subdirectories)
+  work-path    - Path relative to first-works/ (can include subdirectories)
+  --no-confirm - Skip interactive prompts (for automation)
 
 Examples:
   # Full symposium
@@ -23,11 +33,15 @@ Examples:
   # Public essay within a symposium
   ./scripts/cleanup-symposium.sh symposium-constitutional-foundations-2026-01/public-essay
 
+  # Non-interactive (for scripts)
+  ./scripts/cleanup-symposium.sh symposium-governance-2026-01 --no-confirm
+
 This script:
 1. Copies outputs from container to host (first-works/)
-2. Kills remaining tmux sessions (with confirmation)
-3. Git commits the archive
-4. Git pushes to GitHub
+2. Removes nested .git directories (container workspaces have their own repos)
+3. Kills remaining tmux sessions (with confirmation, unless --no-confirm)
+4. Git commits the archive
+5. Git pushes to GitHub
 
 Prerequisites:
 - Convener has completed the workflow (README.md or WORKFLOW_COMPLETE.md exists)
@@ -75,10 +89,14 @@ HAS_WORKFLOW=$(docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atla
 if [ "$HAS_README" = "no" ] && [ "$HAS_WORKFLOW" = "no" ]; then
     echo "Warning: No README.md or WORKFLOW_COMPLETE.md found."
     echo "The Convener may not have completed the workflow."
-    read -p "Continue anyway? (y/N) " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
+    if [ -z "$NO_CONFIRM" ]; then
+        read -p "Continue anyway? (y/N) " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    else
+        echo "  (--no-confirm: continuing anyway)"
     fi
 fi
 
@@ -106,6 +124,9 @@ fi
 docker cp "$CONTAINER_ID:$CONTAINER_DIR" "$HOST_DIR"
 echo "  Copied to: $HOST_DIR"
 
+# Remove any nested .git directories (container workspaces have their own git repos)
+find "$HOST_DIR" -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true
+
 # Count what we got
 FILE_COUNT=$(find "$HOST_DIR" -name "*.md" -type f | wc -l | tr -d ' ')
 echo "  Markdown files: $FILE_COUNT"
@@ -126,9 +147,17 @@ if [ -n "$SESSIONS" ]; then
     echo "  Active sessions:"
     echo "$SESSIONS" | sed 's/^/    /'
     echo ""
-    read -p "  Kill these sessions? (Y/n) " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+    KILL_SESSIONS="yes"
+    if [ -z "$NO_CONFIRM" ]; then
+        read -p "  Kill these sessions? (Y/n) " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            KILL_SESSIONS=""
+        fi
+    else
+        echo "  (--no-confirm: killing sessions)"
+    fi
+    if [ -n "$KILL_SESSIONS" ]; then
         docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c "
             tmux ls 2>/dev/null | grep -E 'atlantis-' | cut -d: -f1 | while read session; do
                 tmux kill-session -t \"\$session\" 2>/dev/null || true
