@@ -53,6 +53,10 @@ mkdir -p "$WORKSPACE/essays"
 cd "$WORKSPACE"
 git init 2>/dev/null || true
 
+# Set up skills symlink
+mkdir -p "$WORKSPACE/.claude"
+ln -sf /atlantis/philosophy/.claude/skills "$WORKSPACE/.claude/skills" 2>/dev/null || true
+
 # Create work bead for this scholar
 echo "→ Creating work bead..."
 cd /atlantis/philosophy

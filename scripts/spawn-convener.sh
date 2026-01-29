@@ -69,6 +69,19 @@ docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c "
     git init 2>/dev/null || true
 " > /dev/null 2>&1
 
+# Ensure skills are available in the convener workspace
+echo "→ Setting up skills..."
+docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c "
+    # Copy skills from repo to philosophy workspace if not present
+    if [ ! -d /atlantis/philosophy/.claude/skills ]; then
+        mkdir -p /atlantis/philosophy/.claude
+        cp -r /new-atlantis-repo/.claude/skills /atlantis/philosophy/.claude/
+    fi
+    # Symlink skills into convener workspace
+    mkdir -p /atlantis/philosophy/convener/.claude
+    ln -sf /atlantis/philosophy/.claude/skills /atlantis/philosophy/convener/.claude/skills 2>/dev/null || true
+"
+
 # Create assignment file locally first, then copy it
 echo "→ Creating Convener ASSIGNMENT.md..."
 

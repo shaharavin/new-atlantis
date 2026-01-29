@@ -81,6 +81,26 @@ CONFIG
 MANAGED
 fi
 
+# Set up philosophy workspace and copy skills from repo
+if [ -d /new-atlantis-repo/.claude/skills ] && [ ! -d /atlantis/philosophy/.claude/skills ]; then
+    echo "Setting up New Atlantis philosophy workspace..."
+    mkdir -p /atlantis/philosophy/.claude
+    cp -r /new-atlantis-repo/.claude/skills /atlantis/philosophy/.claude/
+
+    # Also copy formulas and other beads config
+    if [ -d /new-atlantis-repo/.beads ]; then
+        mkdir -p /atlantis/philosophy/.beads
+        cp -r /new-atlantis-repo/.beads/* /atlantis/philosophy/.beads/ 2>/dev/null || true
+    fi
+
+    # Copy first-works if not present
+    if [ -d /new-atlantis-repo/first-works ] && [ ! -d /atlantis/philosophy/first-works ]; then
+        cp -r /new-atlantis-repo/first-works /atlantis/philosophy/
+    fi
+
+    echo "Philosophy workspace initialized."
+fi
+
 # Execute the command passed to the container
 exec "$@"
 EOF

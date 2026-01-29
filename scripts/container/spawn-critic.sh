@@ -62,6 +62,10 @@ mkdir -p "$WORKSPACE/reviews"
 cd "$WORKSPACE"
 git init 2>/dev/null || true
 
+# Set up skills symlink
+mkdir -p "$WORKSPACE/.claude"
+ln -sf /atlantis/philosophy/.claude/skills "$WORKSPACE/.claude/skills" 2>/dev/null || true
+
 # Create review bead for this critic
 echo "→ Creating review bead..."
 cd /atlantis/philosophy
