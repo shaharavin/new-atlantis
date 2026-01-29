@@ -1,11 +1,13 @@
-# Public Essay Formula
+# Public Essay Formula (v2)
 #
-# A mini-symposium that produces a self-contained, public-facing essay
-# from existing symposium outputs. Tests agent spawning and phase transitions.
+# A Convener-driven workflow that produces a self-contained, public-facing essay
+# from existing symposium outputs.
 #
 # Usage:
-#   bd cook public-essay
-#   bd --no-daemon mol pour public-essay
+#   ./scripts/spawn-convener.sh <symposium-dir>/public-essay public-essay
+#
+# Example:
+#   ./scripts/spawn-convener.sh first-works/symposium-excellence-2026-01/public-essay public-essay
 
 description = """
 Public Essay: 4-phase workflow to produce a self-contained essay for general audiences.
@@ -17,7 +19,7 @@ that stands alone without requiring readers to engage with the full discourse.
 1. **draft**: Scholar writes self-contained essay from symposium materials
 2. **review**: Critic assesses clarity and accessibility
 3. **revise**: Scholar addresses feedback
-4. **polish**: Copyeditor refines prose, adds links, ensures publishability
+4. **polish**: Copyeditor refines prose for publication
 
 ## Philosophy
 - Accessibility over academic rigor
@@ -25,7 +27,11 @@ that stands alone without requiring readers to engage with the full discourse.
 - Public-facing (could be published externally)
 """
 formula = "public-essay"
-version = 1
+version = 2
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 1: Draft Essay
+# ─────────────────────────────────────────────────────────────────────────────
 
 [[steps]]
 id = "draft"
@@ -33,16 +39,38 @@ title = "Phase 1: Draft Essay"
 description = """
 Write a self-contained essay for general audiences.
 
-**Input**: Full symposium outputs (essays, synthesis, opposition)
-**Output**: 2000-3000 word essay that:
-- Explains the question and why it matters
-- Presents key insights from the symposium
-- Acknowledges tensions and disagreements
-- Draws actionable conclusions
-- Requires no prior reading
+**Input**: Full symposium outputs (essays, synthesis, opposition, final critique)
+**Output**: 2000-3000 word essay at $WORK_DIR/public-essay-draft.md
 
-The reader should understand the topic fully from this essay alone.
+The essay should:
+- Explain the question and why it matters
+- Present key insights from the symposium
+- Acknowledge tensions and disagreements
+- Draw actionable conclusions
+- Require no prior reading
+
+CONVENER ACTIONS:
+1. Create work directory: mkdir -p $WORK_DIR
+2. Spawn scholar:
+   ./scripts/container/spawn-scholar.sh essay-writer "$SYMPOSIUM_DIR" "$PARENT_BEAD"
+
+   The scholar's ASSIGNMENT.md should instruct them to:
+   - Read the symposium's synthesis.md, opposition-report.md, and final critiques
+   - Write a 2000-3000 word public-facing essay
+   - Save to $WORK_DIR/public-essay-draft.md
+   - Close their bead when done
+
+3. Launch monitor for 1 bead to close
+4. Wait for nudge
 """
+agent_type = "spawn"
+spawn_script = "spawn-scholar.sh"
+agent_count = 1
+model = "opus"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 2: Review
+# ─────────────────────────────────────────────────────────────────────────────
 
 [[steps]]
 id = "review"
@@ -51,7 +79,10 @@ needs = ["draft"]
 description = """
 Assess the essay for clarity and accessibility.
 
-**Focus areas**:
+**Input**: $WORK_DIR/public-essay-draft.md
+**Output**: $WORK_DIR/review.md
+
+Focus areas:
 - Is it understandable without symposium context?
 - Are technical concepts explained?
 - Is the argument clear?
@@ -59,7 +90,28 @@ Assess the essay for clarity and accessibility.
 - Is it engaging?
 
 Provide specific, actionable feedback.
+
+CONVENER ACTIONS:
+1. Spawn critic:
+   ./scripts/container/spawn-critic.sh reviewer "$WORK_DIR/public-essay-draft.md" "$WORK_DIR" "$PARENT_BEAD"
+
+   The critic's ASSIGNMENT.md should instruct them to:
+   - Review for accessibility and clarity (not philosophical depth)
+   - Focus on what a general audience needs
+   - Save review to $WORK_DIR/review.md
+   - Close their bead when done
+
+2. Launch monitor for 1 more bead (cumulative: 2)
+3. Wait for nudge
 """
+agent_type = "spawn"
+spawn_script = "spawn-critic.sh"
+agent_count = 1
+model = "opus"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 3: Revise
+# ─────────────────────────────────────────────────────────────────────────────
 
 [[steps]]
 id = "revise"
@@ -68,12 +120,36 @@ needs = ["review"]
 description = """
 Address reviewer feedback.
 
+**Input**: $WORK_DIR/public-essay-draft.md + $WORK_DIR/review.md
+**Output**: $WORK_DIR/public-essay-revised.md
+
 Revise the essay based on the review, focusing on:
 - Clarity improvements
 - Better explanations where needed
 - Stronger engagement hooks
 - Tighter argument structure
+
+CONVENER ACTIONS:
+1. Spawn scholar:
+   ./scripts/container/spawn-scholar.sh reviser "$WORK_DIR" "$PARENT_BEAD"
+
+   The scholar's ASSIGNMENT.md should instruct them to:
+   - Read the draft and the review
+   - Revise to address feedback
+   - Save to $WORK_DIR/public-essay-revised.md
+   - Close their bead when done
+
+2. Launch monitor for 1 more bead (cumulative: 3)
+3. Wait for nudge
 """
+agent_type = "spawn"
+spawn_script = "spawn-scholar.sh"
+agent_count = 1
+model = "opus"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 4: Polish
+# ─────────────────────────────────────────────────────────────────────────────
 
 [[steps]]
 id = "polish"
@@ -82,7 +158,10 @@ needs = ["revise"]
 description = """
 Copyedit for publishability.
 
-**Copyeditor tasks**:
+**Input**: $WORK_DIR/public-essay-revised.md
+**Output**: $WORK_DIR/public-essay-final.md
+
+Copyeditor tasks:
 - Prose refinement (flow, rhythm, word choice)
 - Add relevant links to sources
 - Check consistency (terminology, formatting)
@@ -90,4 +169,22 @@ Copyedit for publishability.
 - Final proofread
 
 Output: Publication-ready essay.
+
+CONVENER ACTIONS:
+1. Spawn copyeditor:
+   ./scripts/container/spawn-copyeditor.sh "$WORK_DIR" "$PARENT_BEAD"
+
+   The copyeditor will:
+   - Polish the revised essay
+   - Save final version to $WORK_DIR/public-essay-final.md
+   - Close their bead when done
+
+2. Launch monitor for 1 more bead (cumulative: 4)
+3. Wait for nudge
+4. When all 4 beads are closed, the public essay workflow is complete
+5. Close the parent bead and mail Convener that workflow is done
 """
+agent_type = "spawn"
+spawn_script = "spawn-copyeditor.sh"
+agent_count = 1
+model = "haiku"

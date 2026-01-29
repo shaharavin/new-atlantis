@@ -182,7 +182,7 @@ This script handles only mechanical tasks — no editorial judgment.
 
 ### WI-4: Public Essay Uses Convener
 
-**Status**: PARTIALLY DONE (2026-01-28) — Convener skill updated to handle any formula; spawn-convener.sh not yet formula-parameterized; run-public-essay.sh not yet deprecated
+**Status**: IMPLEMENTED (2026-01-29) — needs live testing
 **Priority**: Medium
 **Depends on**: WI-1 (needs working Convener phase transitions)
 
@@ -209,10 +209,10 @@ This script handles only mechanical tasks — no editorial judgment.
 4. **Deprecate `scripts/container/run-public-essay.sh`** — replaced by Convener + formula
 
 **Acceptance criteria**:
-- [ ] Convener can pour and execute the public-essay formula
-- [ ] All 4 phases transition automatically
-- [ ] Same monitoring pattern as symposium (monitor script + nudge)
-- [ ] `run-public-essay.sh` marked as deprecated
+- [x] Convener can pour and execute the public-essay formula
+- [ ] All 4 phases transition automatically (needs live testing)
+- [x] Same monitoring pattern as symposium (monitor script + nudge)
+- [x] `run-public-essay.sh` marked as deprecated
 
 ---
 

@@ -677,7 +677,8 @@ The Convener selects 3 traditions per symposium for productive tension. See `doc
 | `scripts/container/spawn-opposition.sh` | Spawn an opposition critic |
 | `scripts/container/spawn-synthesizer.sh` | Spawn a synthesizer agent |
 | `scripts/container/spawn-bibliographer.sh` | Spawn a bibliographer agent |
-| `scripts/container/run-public-essay.sh` | Run public essay workflow (to be deprecated in favor of Convener) |
+| `scripts/container/spawn-copyeditor.sh` | Spawn a copyeditor agent (public-essay polish phase) |
+| `scripts/container/run-public-essay.sh` | DEPRECATED — use `spawn-convener.sh` with `public-essay` formula |
 
 ### Host-Side Scripts (for human operators)
 | File | Purpose |

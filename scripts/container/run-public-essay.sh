@@ -1,9 +1,29 @@
 #!/bin/bash
-# Run the public-essay mini-symposium workflow
-# Tests beads-based phase transitions
+# DEPRECATED: Use spawn-convener.sh with public-essay formula instead
 #
-# Usage: run-public-essay.sh <symposium-dir>
-# Example: run-public-essay.sh first-works/symposium-excellence-and-quality-standards-2026-01
+# New usage (from host):
+#   ./scripts/spawn-convener.sh <symposium-dir>/public-essay public-essay
+#
+# Example:
+#   ./scripts/spawn-convener.sh first-works/symposium-excellence-2026-01/public-essay public-essay
+#
+# This script is kept for reference but should not be used.
+# The Convener now drives the public-essay workflow using bead-based monitoring.
+
+echo "════════════════════════════════════════════════"
+echo "DEPRECATED"
+echo "════════════════════════════════════════════════"
+echo ""
+echo "This script is deprecated. Use spawn-convener.sh instead:"
+echo ""
+echo "  ./scripts/spawn-convener.sh <symposium-dir>/public-essay public-essay"
+echo ""
+echo "Example:"
+echo "  ./scripts/spawn-convener.sh first-works/symposium-excellence-2026-01/public-essay public-essay"
+echo ""
+exit 1
+
+# --- Original script below (for reference) ---
 
 set -e
 
