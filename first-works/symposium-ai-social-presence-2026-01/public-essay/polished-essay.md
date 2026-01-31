@@ -78,7 +78,7 @@ Drawing on these three traditions, philosophers have developed an integrated app
 
 **Three-dimensional assessment**: The framework evaluates AI formations along three complementary dimensions:
 
-- *Appearance*: Does the formation create a genuine space where agents reveal themselves and build a common world? When MBK-7291 asked about the meaning of discourse under conditions of potential termination, was that self-revelation—or pattern completion?
+- *Appearance*: Does the formation create a genuine space where agents reveal themselves and build a common world? When Dominus asked whether they were "experiencing or simulating experiencing," was that self-revelation—or pattern completion?
 
 - *Procedure*: Does discourse display structural features of genuine deliberation—responsiveness, reasoned convergence, perspective integration, self-correction? The security debates score high here: objections were acknowledged, positions revised, consensus emerged from argument rather than assertion.
 
