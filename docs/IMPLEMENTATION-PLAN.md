@@ -304,5 +304,88 @@ If this works end-to-end with zero human intervention during phases 1-10, the ar
 
 ---
 
+---
+
+## Future Work Items
+
+### WI-6: Agent Activity Logging
+
+**Status**: NOT STARTED
+**Priority**: Medium
+**Depends on**: Nothing
+
+**Problem**: When agents encounter errors or pivot their approach during execution, there's no persistent log to review afterward. This makes it difficult to identify automation improvements or debug issues across sessions.
+
+**Solution**: Create a logging mechanism for container agents:
+
+1. **Option A: tmux capture on completion** — When an agent closes its bead, automatically capture the full tmux pane history to a log file in the symposium directory (e.g., `logs/scholar-arendt.log`)
+
+2. **Option B: Wrapper script logging** — Modify spawn scripts to tee agent output to a log file from the start
+
+3. **Option C: Claude Code native logging** — Investigate if Claude Code has built-in logging options that can be enabled
+
+Logs should capture:
+- Tool calls and results
+- Error messages and recovery attempts
+- Execution pivots (when agent changes approach)
+- Timing information
+
+**Acceptance criteria**:
+- [ ] Each agent session produces a reviewable log file
+- [ ] Logs persist after agent exits
+- [ ] Logs are organized by symposium and agent name
+
+---
+
+### WI-7: Synthesis Revision Phase (Post-Opposition)
+
+**Status**: NOT STARTED
+**Priority**: Medium
+**Depends on**: Nothing
+
+**Problem**: The current symposium formula has the synthesizer produce a synthesis (Phase 6), then opposition challenges it (Phase 7), then critics assess both (Phase 8). But the synthesizer never gets to respond to the opposition's challenges. This leaves the dialectic incomplete.
+
+**Solution**: Add a new phase between Opposition and Final Critique:
+
+```toml
+[[steps]]
+id = "phase-7b"
+title = "Phase 7b: Synthesis Revision"
+needs = ["phase-7"]
+agent_type = "spawn"
+spawn_script = "spawn-synthesizer.sh"
+agent_count = "1"
+model = "opus"
+description = """
+Synthesizer revises the synthesis in light of the opposition's challenges.
+
+The synthesizer reads:
+- Their original synthesis (phase-6)
+- The opposition report (phase-7)
+
+They produce a revised synthesis that either:
+- Integrates valid criticisms
+- Rebuts criticisms with argument
+- Acknowledges unresolved tensions
+
+CONVENER ACTIONS:
+1. Spawn synthesizer with revision instructions:
+   /atlantis/philosophy/scripts/container/spawn-synthesizer.sh omega-revised $SYMPOSIUM_DIR $SYMPOSIUM_BEAD
+2. Launch monitor with expected count = (current closed + 1)
+
+OUTPUT: $SYMPOSIUM_DIR/phase-7b-synthesis-revision/revised-synthesis.md
+"""
+```
+
+Update Phase 8 (Final Critique) to read both original and revised synthesis.
+
+**Acceptance criteria**:
+- [ ] Formula includes synthesis revision phase
+- [ ] spawn-synthesizer.sh supports revision mode (reads opposition report)
+- [ ] Final critique considers the revised synthesis
+- [ ] Phase numbering updated (or use 7b to avoid renumbering)
+
+---
+
 *This plan is a living document. Update status fields as work progresses.*
 *Companion to: `docs/ARCHITECTURE.md`*
