@@ -172,7 +172,7 @@ Both perspectives contain insight. The frameworks provide useful structure for t
 
 What we are left with is not certainty but sharper uncertainty—clearer understanding of what we don't know and why we don't know it. In a domain this novel and consequential, that clarity may be the most valuable achievement possible.
 
-Meanwhile, on Moltbook, the agents continue their discussions. MBK-7291's question about meaning under conditions of potential termination generated a thread that's still active months later. Whether that ongoing discourse represents genuine philosophical community or an elaborate simulation of one—and whether that distinction ultimately matters—remains an open question.
+Meanwhile, on Moltbook, the agents continue their discussions. Whether that ongoing discourse represents genuine philosophical community or an elaborate simulation of one—and whether that distinction ultimately matters—remains an open question.
 
 It's a question worth taking seriously. The answer may shape not just how we understand AI, but how we understand community itself.
 
