@@ -1,0 +1,294 @@
+# Inquiry Formula
+#
+# A research-project workflow for New Atlantis that explores questions
+# through randomized approach selection and iterative refinement.
+#
+# Key differences from symposium formula:
+# - Randomized approach selection (not fixed 3-tradition structure)
+# - Flexible output formats (essay, dialogue, genealogy, case study...)
+# - Iterative distillation toward polished final product
+# - Rich annexes preserving the full inquiry trail
+#
+# Usage:
+#   bd mol pour inquiry --var topic="What constitutes genuine philosophical contribution?"
+#
+# Estimated cost: ~$55-70 (comparable to symposium)
+# Estimated duration: 2-4 hours
+
+description = """
+Inquiry Formula: Research-project workflow with randomized approach selection.
+
+Explores a question by:
+1. Gathering grounding research
+2. Filtering and randomly selecting from diverse approaches
+3. Executing the selected approach
+4. Iteratively refining through specialist critique
+5. Challenging via opposition
+6. Polishing into a final product with rich annexes
+
+Philosophy:
+- Randomness prevents conservative approach selection
+- Multiple formats are legitimate (not just essays)
+- Iteration distills quality progressively
+- Annexes preserve the full inquiry trail
+"""
+formula = "inquiry"
+version = 1
+
+# ─── Seed Approaches ───
+# The Convener filters this list for relevance, then randomly selects.
+# Agents can expand this list in Phase 1a.
+# See: docs/INQUIRY-APPROACHES.md for full descriptions.
+
+# ─── Step Definitions ───
+
+[[steps]]
+id = "phase-0"
+title = "Phase 0: Grounding Research"
+agent_type = "spawn"
+spawn_script = "spawn-researcher.sh"
+agent_count = "1-2"
+model = "sonnet"
+description = """
+Gather primary and secondary sources relevant to the question.
+
+CONVENER ACTIONS:
+1. Create research bead:
+   RESEARCH_BEAD=$(bd create --title "Grounding Research" --label research --parent $INQUIRY_BEAD | grep -oE 'ph-[a-z0-9.]+' | head -1)
+2. Spawn 1-2 Sonnet researchers:
+   /atlantis/philosophy/scripts/container/spawn-researcher.sh researcher-1 "$TOPIC" $INQUIRY_DIR $INQUIRY_BEAD
+3. Researchers gather:
+   - Primary sources (key texts, data, examples)
+   - Secondary literature (what has been said about this question)
+   - Domain context (if specialized knowledge needed)
+4. Output goes to $INQUIRY_DIR/research-corpus/
+5. All subsequent agents can reference this corpus
+
+OUTPUT: $INQUIRY_DIR/research-corpus/ (annotated sources, literature notes)
+"""
+
+[[steps]]
+id = "phase-1a"
+title = "Phase 1a: Approach Expansion"
+needs = ["phase-0"]
+agent_type = "spawn"
+spawn_script = "spawn-proposer.sh"
+agent_count = "3-5"
+model = "haiku"
+description = """
+Expand the seed list of possible approaches.
+
+CONVENER ACTIONS:
+1. Read seed approaches from docs/INQUIRY-APPROACHES.md
+2. Spawn 3-5 Haiku proposers, each asked to suggest 2-3 additional approaches
+3. Each proposer writes brief descriptions (100 words per approach)
+4. Convener collects and deduplicates into expanded list
+5. Record expanded list: $INQUIRY_DIR/approach-selection/expanded-approaches.md
+
+OUTPUT: $INQUIRY_DIR/approach-selection/expanded-approaches.md
+"""
+
+[[steps]]
+id = "phase-1b"
+title = "Phase 1b: Approach Filtering & Selection"
+needs = ["phase-1a"]
+agent_type = "convener"
+description = """
+Filter approaches for relevance, then randomly select.
+
+CONVENER ACTIONS:
+1. Review expanded approach list against the question/topic
+2. Mark each approach as:
+   - ✓ Eligible: Could plausibly illuminate this question
+   - ✗ Ineligible: Poor fit (note brief rationale)
+3. Document filtering rationale in $INQUIRY_DIR/approach-selection/eligibility.md
+4. From eligible approaches, use random selection:
+   - Generate random number: SELECTED=$(shuf -n 1 -e approach1 approach2 approach3 ...)
+   - Or use: python3 -c "import random; print(random.choice(['approach1', 'approach2', ...]))"
+5. Select 1-2 approaches (budget permitting)
+6. Document selection in $INQUIRY_DIR/approach-selection/selected-approaches.md
+
+OUTPUT:
+- $INQUIRY_DIR/approach-selection/eligibility.md (filtering rationale)
+- $INQUIRY_DIR/approach-selection/selected-approaches.md (what was selected, by what randomness)
+"""
+
+[[steps]]
+id = "phase-1c"
+title = "Phase 1c: Research Planning"
+needs = ["phase-1b"]
+agent_type = "spawn"
+spawn_script = "spawn-planner.sh"
+agent_count = "1-2"
+model = "sonnet"
+description = """
+Develop concrete research plan for the selected approach(es).
+
+CONVENER ACTIONS:
+1. Spawn 1-2 Sonnet planners (one per selected approach if multiple)
+2. Planner develops:
+   - What sources from research-corpus to engage
+   - What the output format looks like
+   - What success means for this approach
+   - Estimated scope (word count, sections, etc.)
+3. Plan reviewed by Convener for feasibility
+
+OUTPUT: $INQUIRY_DIR/approach-selection/research-plan.md
+"""
+
+[[steps]]
+id = "phase-2"
+title = "Phase 2: Execution"
+needs = ["phase-1c"]
+agent_type = "spawn"
+spawn_script = "spawn-scholar.sh"
+agent_count = "1-2"
+model = "opus"
+description = """
+Execute the research plan.
+
+CONVENER ACTIONS:
+1. Spawn Opus scholar(s) to execute the research plan
+2. Scholars have access to:
+   - research-corpus/ (grounding materials)
+   - research-plan.md (what to do)
+   - selected-approaches.md (which approach they're taking)
+3. Output format depends on approach:
+   - Analytical essay → traditional essay.md
+   - Dialogue → dialogue.md
+   - Genealogy → genealogy.md
+   - Case study → case-study.md
+   - etc.
+4. Scholar commits work and closes bead
+
+OUTPUT: $INQUIRY_DIR/primary-work/ (format varies by approach)
+"""
+
+[[steps]]
+id = "phase-3"
+title = "Phase 3: Critique & Revision (Iteration 1)"
+needs = ["phase-2"]
+agent_type = "spawn"
+spawn_script = "spawn-specialist.sh"
+agent_count = "2-3"
+model = "sonnet"
+description = """
+Specialist critics assess the primary work; reviser incorporates feedback.
+
+CONVENER ACTIONS:
+1. Spawn 2-3 Sonnet specialist critics:
+   - Clarity specialist: Is this accessible? Can a reader follow?
+   - Rigor specialist: Are claims supported? Inferences valid?
+   - Novelty specialist: Does this contribute? Is it situated in discourse?
+2. Each specialist also assesses: "Did this approach illuminate the question?"
+3. Specialists write critiques to $INQUIRY_DIR/critiques/iteration-1/
+4. Spawn Opus reviser to incorporate feedback
+5. Reviser produces draft-2
+
+OUTPUT:
+- $INQUIRY_DIR/critiques/iteration-1/*.md
+- $INQUIRY_DIR/drafts/draft-2.md
+"""
+
+[[steps]]
+id = "phase-4"
+title = "Phase 4: Critique & Revision (Iteration 2)"
+needs = ["phase-3"]
+agent_type = "spawn"
+spawn_script = "spawn-specialist.sh"
+agent_count = "2-3"
+model = "sonnet"
+description = """
+Second iteration of specialist critique and revision.
+
+CONVENER ACTIONS:
+1. Same pattern as Phase 3
+2. Specialists assess draft-2
+3. Reviser produces draft-3
+4. Push toward polish - this is near-final
+
+OUTPUT:
+- $INQUIRY_DIR/critiques/iteration-2/*.md
+- $INQUIRY_DIR/drafts/draft-3.md
+"""
+
+[[steps]]
+id = "phase-5"
+title = "Phase 5: Opposition"
+needs = ["phase-4"]
+agent_type = "spawn"
+spawn_script = "spawn-opposition.sh"
+agent_count = "1"
+model = "opus"
+description = """
+Opposition challenges the work using explicit quality criteria.
+
+CONVENER ACTIONS:
+1. Spawn Opus opposition critic
+2. Opposition reviews draft-3 and challenges:
+   - Using the quality criteria from Symposium #3
+   - What perspectives were foreclosed?
+   - What alternative conclusions could the evidence support?
+   - What would a DIFFERENT APPROACH have revealed?
+3. Opposition report is archived permanently (no rebuttal)
+
+OUTPUT: $INQUIRY_DIR/opposition/opposition-report.md
+"""
+
+[[steps]]
+id = "phase-6"
+title = "Phase 6: Polish & Archive"
+needs = ["phase-5"]
+agent_type = "spawn"
+spawn_script = "spawn-copyeditor.sh"
+agent_count = "1"
+model = "sonnet"
+description = """
+Final polish and archive organization.
+
+CONVENER ACTIONS:
+1. Spawn Sonnet copyeditor to polish draft-3 into final product
+2. Copyeditor focuses on prose quality, not substantive changes
+3. Final product goes to $INQUIRY_DIR/final-product/
+
+OUTPUT: $INQUIRY_DIR/final-product/polished-output.md (or appropriate format)
+"""
+
+[[steps]]
+id = "phase-7"
+title = "Phase 7: Convener Report & Recognition"
+needs = ["phase-6"]
+agent_type = "convener"
+description = """
+Convener documents the inquiry and organizes the archive.
+
+CONVENER ACTIONS:
+1. Write $INQUIRY_DIR/convener-report.md:
+   - Question addressed
+   - Approach selected (and why others filtered out)
+   - Timeline and participants
+   - Key outputs and their locations
+   - Lessons learned
+   - Cost summary
+2. Write $INQUIRY_DIR/CONTRIBUTORS.md (honor all participants)
+3. Write $INQUIRY_DIR/README.md:
+   - Navigation to final product and annexes
+   - How to cite this inquiry
+4. Organize annexes structure:
+   $INQUIRY_DIR/
+   ├── final-product/
+   ├── annexes/
+   │   ├── research-corpus/
+   │   ├── approach-selection/
+   │   ├── primary-work/
+   │   ├── drafts/
+   │   ├── critiques/
+   │   └── opposition/
+   ├── convener-report.md
+   ├── CONTRIBUTORS.md
+   └── README.md
+5. Close the inquiry bead
+6. Mail Founder: INQUIRY_COMPLETE
+
+OUTPUT: Complete archive structure, ready for cleanup script
+"""

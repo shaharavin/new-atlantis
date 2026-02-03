@@ -232,6 +232,35 @@ revise: → Scholar addresses feedback
 polish: → Copyeditor refines prose
 ```
 
+#### Inquiry (`inquiry.formula.toml`)
+
+A research-project workflow with randomized approach selection. More exploratory than the fixed-format symposium.
+
+```
+phase-0: Grounding Research      → Gather primary/secondary sources
+phase-1a: Approach Expansion     → Haiku agents propose additional approaches
+phase-1b: Approach Selection     → Convener filters, then random selection
+phase-1c: Research Planning      → Develop concrete plan for selected approach
+phase-2: Execution               → Opus scholar(s) execute the plan
+phase-3: Critique & Revision 1   → Specialist critics + Opus reviser
+phase-4: Critique & Revision 2   → Second iteration toward polish
+phase-5: Opposition              → Challenge using quality criteria
+phase-6: Polish & Archive        → Copyeditor + Convener finalize
+phase-7: Convener Report         → Documentation and recognition
+```
+
+**Key features**:
+- **Randomized approach selection**: Convener filters seed approaches for relevance, then randomly selects (prevents conservative defaults)
+- **Flexible output formats**: Essay, dialogue, genealogy, case study, etc. depending on approach
+- **Iterative refinement**: Two critique/revision cycles distill toward quality
+- **Rich annexes**: All research, drafts, critiques, opposition preserved alongside final product
+
+**Typical cost**: ~$55-70 (comparable to symposium)
+
+**Typical duration**: 2-4 hours
+
+See `docs/INQUIRY-APPROACHES.md` for the seed list of approaches.
+
 ### 3.3 Future Formulas
 
 Formulas we expect to create as the project evolves:
@@ -422,11 +451,19 @@ Skills load on-demand, saving context window space vs. putting everything in CLA
 
 Container-native scripts in `scripts/container/`:
 
-| Script | Creates | Bead | Session |
-|--------|---------|------|---------|
-| `spawn-scholar.sh` | Workspace, ASSIGNMENT.md, tmux session | Work bead (child of symposium) | `atlantis-philosophy-<name>` |
-| `spawn-critic.sh` | Workspace, ASSIGNMENT.md, tmux session | Review bead (child of symposium) | `atlantis-critic-<name>` |
-| `spawn-opposition.sh` | Workspace, ASSIGNMENT.md, tmux session | Opposition bead (child of symposium) | `atlantis-opposition-<name>` |
+| Script | Creates | Model | Session |
+|--------|---------|-------|---------|
+| `spawn-scholar.sh` | Workspace, ASSIGNMENT.md, work bead | Opus | `atlantis-philosophy-<name>` |
+| `spawn-critic.sh` | Workspace, ASSIGNMENT.md, review bead | Opus | `atlantis-critic-<name>` |
+| `spawn-opposition.sh` | Workspace, ASSIGNMENT.md, opposition bead | Opus | `atlantis-opposition-<name>` |
+| `spawn-synthesizer.sh` | Workspace, ASSIGNMENT.md, synthesis bead | Opus | `atlantis-synthesizer-<name>` |
+| `spawn-copyeditor.sh` | Workspace, ASSIGNMENT.md, copyedit bead | Sonnet | `atlantis-copyeditor-<name>` |
+| `spawn-bibliographer.sh` | Workspace, ASSIGNMENT.md, bibliography bead | Haiku | `atlantis-bibliographer-<name>` |
+| `spawn-anthropologist.sh` | Workspace, ASSIGNMENT.md, observation bead | Opus | `atlantis-anthropologist-<name>` |
+| `spawn-researcher.sh` | Research corpus, research bead | Sonnet | `atlantis-researcher-<name>` |
+| `spawn-proposer.sh` | Approach proposals, proposal bead | Haiku | `atlantis-proposer-<name>` |
+| `spawn-planner.sh` | Research plan, planning bead | Sonnet | `atlantis-planner-<name>` |
+| `spawn-specialist.sh` | Focused critique, critique bead | Sonnet | `atlantis-specialist-<name>` |
 
 **All scripts**:
 1. Create workspace directory

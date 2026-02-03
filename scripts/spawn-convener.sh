@@ -181,6 +181,29 @@ sleep 1
 docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis \
     tmux send-keys -t "$SESSION_NAME" Enter
 
+# Start the prompt nudger daemon (prevents agents from getting stuck at prompts)
+echo "→ Starting prompt nudger daemon..."
+docker compose -f "$PROJECT_ROOT/docker-compose.yml" exec -T atlantis bash -c '
+    # Copy nudger script from repo if needed
+    if [ ! -f /atlantis/philosophy/scripts/container/prompt-nudger.sh ]; then
+        cp /new-atlantis-repo/scripts/container/prompt-nudger.sh /atlantis/philosophy/scripts/container/ 2>/dev/null || true
+        chmod +x /atlantis/philosophy/scripts/container/prompt-nudger.sh 2>/dev/null || true
+    fi
+
+    # Kill any existing nudger
+    if [ -f /atlantis/philosophy/nudger/prompt-nudger.pid ]; then
+        OLD_PID=$(cat /atlantis/philosophy/nudger/prompt-nudger.pid)
+        kill $OLD_PID 2>/dev/null || true
+    fi
+
+    # Start nudger daemon
+    mkdir -p /atlantis/philosophy/nudger
+    nohup /atlantis/philosophy/scripts/container/prompt-nudger.sh --daemon \
+        > /atlantis/philosophy/nudger/prompt-nudger.log 2>&1 &
+    echo $! > /atlantis/philosophy/nudger/prompt-nudger.pid
+    echo "   Nudger daemon started (PID: $!)"
+'
+
 echo ""
 echo "════════════════════════════════════════════════"
 echo "Convener Spawned Successfully"
@@ -200,6 +223,9 @@ echo ""
 echo "The Convener will:"
 echo "  - Load /convener-role skill and read the $FORMULA_NAME formula"
 echo "  - Drive all phases autonomously using bead-based monitoring"
+echo ""
+echo "The prompt nudger daemon is running to prevent agents getting stuck."
+echo "  Log: docker compose exec atlantis tail -f /atlantis/philosophy/nudger/prompt-nudger.log"
 echo ""
 echo "When complete, run cleanup:"
 echo "  ./scripts/cleanup-symposium.sh \$(basename $SYMPOSIUM_DIR)"
